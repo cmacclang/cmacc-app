@@ -1,0 +1,9 @@
+.idea
+
+yarn.lock
+yarn-error.log
+
+assets
+
+bower_components
+node_modules
