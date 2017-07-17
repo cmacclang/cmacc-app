@@ -1,0 +1,140 @@
+const url = require('url');
+const path = require('path');
+
+const cmacc = require('cmacc-compiler');
+
+const fetch = require('node-fetch');
+
+const base = 'https://api.github.com';
+
+const getCmacc = function (context, token) {
+
+  global.token = token;
+
+  const base = 'github:///'
+  const urlPath = path.join(context.user, context.repo, context.branch, context.path);
+  const location = url.resolve(base, urlPath);
+
+
+  if (context.format === 'source' || context.format === 'edit') {
+    return cmacc.loader(location).then(x => x.data)
+  }
+
+  const ast = cmacc.compile(location)
+
+    .then(x => {
+      return (context.prop) ? x[prop] : x;
+    });
+
+
+  if (context.format === 'ast') {
+    return ast
+  }
+
+  if (context.format === 'html') {
+    return ast
+      .then(x => {
+        return cmacc.render(x)
+      })
+      .then(x => {
+        return cmacc.remarkable.render(x)
+      })
+  }
+
+};
+
+const getUser = (token) => {
+
+
+  const location = url.resolve(base, '/user');
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+
+  return fetch(location, opts)
+    .then(x => x.json())
+
+}
+
+const getCommit = (context, token) => {
+
+  const urlPath = path.join('repos', context.user, context.repo, 'commits', context.branch);
+  const location = url.resolve(base, urlPath);
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+
+  return fetch(location, opts)
+    .then(x => x.json())
+
+};
+
+const getBranches = (context, token) => {
+  const base = 'https://api.github.com';
+
+  const urlPath = path.join('repos', context.user, context.repo, 'branches');
+
+  const location = url.resolve(base, urlPath);
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+
+  return fetch(location, opts)
+    .then(x => x.json())
+
+};
+
+const saveCommit = (message, content, context, token) => {
+
+  const urlPath = path.join('repos', context.user, context.repo, 'contents', context.path);
+  const location = url.resolve(base, urlPath);
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+
+  return fetch(location + '?ref=' + context.branch, opts)
+    .then((x) => {
+      return x.json();
+    })
+    .then((x) => {
+      const body = {
+        path: context.path,
+        message: message,
+        branch: context.branch,
+        sha: x.sha,
+        content: new Buffer(content).toString('base64')
+      };
+
+      const opts = {
+        method: 'PUT',
+        headers: {
+          'Authorization': "token " + token
+        },
+        body: JSON.stringify(body),
+      };
+
+      return fetch(location, opts);
+    })
+
+    .then(x => x.json())
+    .then(x => {
+      console.log(x)
+      return x;
+    })
+
+};
+
+
+module.exports = {getCmacc, getUser, getCommit, getBranches, saveCommit};

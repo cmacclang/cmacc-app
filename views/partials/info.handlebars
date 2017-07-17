@@ -1,0 +1,24 @@
+<div class="card text-center" style="background-color: #f7f7f9;">
+  <div class="card-block" style="padding:8px">
+    <ul class="nav nav-pills card-header-pills">
+      <li class="nav-item">
+        <a class="nav-link" href="#">{{context.repo}}</a>
+      </li>
+      <li class="nav-item">
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{context.branch}}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {{#each branches}}
+            <a class="dropdown-item" href="#">{{this.name}}</a>
+          {{/each}}
+        </div>
+      </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">{{context.path}}</a>
+      </li>
+    </ul>
+  </div>
+</div>

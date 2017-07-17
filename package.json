@@ -10,8 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.17.2",
+    "bootstrap": "^4.0.0-alpha.6",
     "cmacc-compiler": "cmacclang/cmacc-compiler#v2",
     "express": "^4.15.3",
+    "express-handlebars": "^3.0.0",
     "express-session": "^1.15.3",
     "github": "^9.2.0",
     "http-proxy-middleware": "^0.17.4",
