@@ -16,19 +16,26 @@ const getCmacc = function (context, token) {
   const location = url.resolve(base, urlPath);
 
 
-  if (context.format === 'source' || context.format === 'edit') {
+  if (context.format === 'source' || context.format === 'edit' ) {
     return cmacc.loader(location).then(x => x.data)
   }
 
   const ast = cmacc.compile(location)
 
     .then(x => {
-      return (context.prop) ? x[prop] : x;
+      return (context.prop) ? x[context.prop] : x;
     });
 
 
   if (context.format === 'ast') {
     return ast
+  }
+
+  if (context.format === 'group') {
+    return ast
+      .then(x => {
+        return cmacc.render(x)
+      })
   }
 
   if (context.format === 'html') {

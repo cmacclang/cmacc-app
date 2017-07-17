@@ -1,16 +1,19 @@
 <ul class="nav nav-tabs">
 
   <li class="nav-item">
-    <a class="nav-link {{#if active.source }}active{{/if}}" href="?format=source">Source</a>
+    <a class="nav-link {{#if active.source }}active{{/if}}" href="?format=source{{#if context.prop }}&prop={{context.prop}}{{/if}}">Source</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link {{#if active.html }}active{{/if}}" href="?format=html">Html</a>
+    <a class="nav-link {{#if active.html }}active{{/if}}" href="?format=html{{#if context.prop }}&prop={{context.prop}}{{/if}}">Html</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link {{#if active.ast }}active{{/if}}" href="?format=ast">Ast</a>
+    <a class="nav-link {{#if active.ast }}active{{/if}}" href="?format=ast{{#if context.prop }}&prop={{context.prop}}{{/if}}">Ast</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link {{#if active.edit }}active{{/if}}" href="?format=edit">Edit</a>
+    <a class="nav-link {{#if active.group }}active{{/if}}" href="?format=group{{#if context.prop }}&prop={{context.prop}}{{/if}}">Group</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{#if active.edit }}active{{/if}}" href="?format=edit{{#if context.prop }}&prop={{context.prop}}{{/if}}">Edit</a>
   </li>
 
 </ul>

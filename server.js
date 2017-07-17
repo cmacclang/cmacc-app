@@ -28,6 +28,7 @@ app.use(expressSession({
 app.use('/assets', express.static('assets'))
 app.use(require('./routes/authRoute'));
 app.use(require('./routes/cmaccRoute'));
+app.use(require('./routes/indexRoute'));
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`)

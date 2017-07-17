@@ -1,3 +1,4 @@
+const url = require('url');
 const express = require('express');
 
 const expressBodyParser = require('body-parser')
@@ -33,6 +34,7 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
       ast: req.context.format === 'ast',
       html: req.context.format === 'html',
       edit: req.context.format === 'edit',
+      group: req.context.format === 'group',
     }
   }
 
@@ -50,17 +52,39 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
 
     if (req.context.format === 'html') {
       obj.content = x[0];
-      res.render('html', obj);
+      res.render('cmacc', obj);
     }
 
     if (req.context.format === 'source') {
-      obj.content = x[0];
-      res.render('source', obj);
+      obj.source = true;
+      obj.content = x[0].replace(/\[(.*)\]/g, (res, link) => {
+        const target = url.resolve(req.path, link)
+        return `<a href="${target}">${res}</a>`
+      });
+      res.render('cmacc', obj);
     }
 
     if (req.context.format === 'ast') {
+      obj.source = true;
       obj.content = JSON.stringify(x[0], null, 2);
-      res.render('source', obj);
+      res.render('cmacc', obj);
+    }
+
+    if (req.context.format === 'group') {
+      const openTags = [
+        'heading_open',
+        'paragraph_open',
+      ];
+      var groups = x[0].reduce((acc, cur) => {
+        if(openTags.indexOf(cur.type) > 0){
+          acc.push([cur])
+        }else{
+          acc[acc.length].push(cur)
+        }
+      }, []);
+
+      obj.content = groups;
+      res.render('cmacc', obj);
     }
 
     if (req.context.format === 'edit') {
@@ -73,7 +97,6 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
 });
 
 router.post('/:user/:repo/:branch/*', (req, res) => {
-  console.log(req.body)
   githubServices.saveCommit(req.body.message, req.body.content, req.context, req.token)
     .then((x) => {
       console.log('res', x)
