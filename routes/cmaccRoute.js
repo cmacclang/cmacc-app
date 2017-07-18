@@ -35,6 +35,7 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
       html: req.context.format === 'html',
       edit: req.context.format === 'edit',
       group: req.context.format === 'group',
+      form: req.context.format === 'form',
     }
   }
 
@@ -97,6 +98,16 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
       res.render('group', obj);
     }
 
+    if (req.context.format === 'form') {
+      req.context.format = 'source'
+      obj.path = req.path;
+      obj.content = x[0].replace(/{{(.*)}}/g, (match, val) => {
+        return `<input type="text"  name="data.${val}" />`
+      });
+      res.render('form', obj);
+
+    }
+
     if (req.context.format === 'edit') {
       obj.content = x[0];
       res.render('edit', obj);
@@ -112,6 +123,10 @@ router.post('/:user/:repo/:branch/*', (req, res) => {
       console.log('res', x)
       res.redirect(req.path)
     })
+});
+
+router.post('/form', (req, res) => {
+  res.redirect(req.body.path)
 });
 
 module.exports = router;

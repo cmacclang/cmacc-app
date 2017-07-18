@@ -6,12 +6,16 @@
   {{> navigation }}
 </nav>
 
-<form method="post">
+<form action="/form" method="post">
 
-  <div class="form-group">
-    <label for="exampleTextarea">Example textarea</label>
-    <textarea name="content" class="form-control" id="exampleTextarea" rows="20">{{{content}}}</textarea>
+  <input type="hidden" name="contex" value="{{{contex}}}">
+  <input type="hidden" name="path" value="{{path}}">
+
+  <div>
+    {{{content}}}
   </div>
+
+  <hr/>
 
   <div class="form-group">
     <label for="exampleInputEmail1">Message</label>
@@ -21,3 +25,4 @@
   <button type="submit" class="btn btn-primary">Commit</button>
 
 </form>
+

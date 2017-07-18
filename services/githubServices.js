@@ -38,7 +38,7 @@ const getCmacc = function (context, token) {
       })
   }
 
-  if (context.format === 'html') {
+  if (context.format === 'html' || context.format === 'form') {
     return ast
       .then(x => {
         return cmacc.render(x)
