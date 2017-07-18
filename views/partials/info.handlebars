@@ -13,7 +13,7 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               {{#each branches}}
-                <a class="dropdown-item" href="#">{{this.name}}</a>
+                <a class="dropdown-item" href="/{{../context.user}}/{{../context.repo}}/{{../context.branch}}/{{../context.path}}?format={{../context.format}}{{#if ../context.prop }}&prop={{../context.prop}}{{/if}}">{{this.name}}</a>
               {{/each}}
             </div>
           </div>
@@ -24,9 +24,9 @@
       </ul>
     </div>
     <div class="float-right">
-      <a class="btn" target="_blank"
-         href="https://github.com/{{context.user}}/{{context.repo}}/blob/{{context.branch}}/{{context.path}}"><i
-              class="fa fa-github" aria-hidden="true"></i> open in Github</a>
+      <a class="btn" target="_blank" href="https://github.com/{{context.user}}/{{context.repo}}/blob/{{context.branch}}/{{context.path}}">
+        <i class="fa fa-github" aria-hidden="true"></i> open in Github
+      </a>
     </div>
   </div>
 </div>

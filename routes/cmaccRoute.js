@@ -1,10 +1,10 @@
 const url = require('url');
 const express = require('express');
 
-const expressBodyParser = require('body-parser')
+const expressBodyParser = require('body-parser');
 
-const githubServices = require('../services/githubServices')
-
+const githubServices = require('../services/githubServices');
+const remarkable = require('cmacc-compiler').remarkable;
 
 const router = express.Router();
 
@@ -74,17 +74,27 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
       const openTags = [
         'heading_open',
         'paragraph_open',
+        'ordered_list_open',
       ];
+
       var groups = x[0].reduce((acc, cur) => {
-        if(openTags.indexOf(cur.type) > 0){
+        if (openTags.indexOf(cur.type) >= 0) {
           acc.push([cur])
-        }else{
-          acc[acc.length].push(cur)
+        } else {
+          acc[(acc.length - 1)].push(cur)
         }
+        return acc;
       }, []);
 
-      obj.content = groups;
-      res.render('cmacc', obj);
+      obj.content = groups
+        .map((md) => {
+          const res = remarkable.render(md)
+          return res;
+        }).reduce((acc, cur) => {
+          acc += `<div class="block">${cur}</div>`
+          return acc
+        }, "");
+      res.render('group', obj);
     }
 
     if (req.context.format === 'edit') {
