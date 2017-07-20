@@ -9,7 +9,9 @@ const base = 'https://api.github.com';
 
 const getCmacc = function (context, token) {
 
-  global.token = token;
+  const opts = {
+    token
+  }
 
   const base = 'github:///'
   const urlPath = path.join(context.user, context.repo, context.branch, context.path);
@@ -20,7 +22,7 @@ const getCmacc = function (context, token) {
     return cmacc.loader(location).then(x => x.data)
   }
 
-  const ast = cmacc.compile(location)
+  const ast = cmacc.compile(location, opts)
 
     .then(x => {
       return (context.prop) ? x[context.prop] : x;
@@ -137,7 +139,7 @@ const saveCommit = (message, content, context, token) => {
 
     .then(x => x.json())
     .then(x => {
-      console.log(x)
+      //console.log(x)
       return x;
     })
 

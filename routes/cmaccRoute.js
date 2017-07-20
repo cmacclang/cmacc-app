@@ -1,6 +1,8 @@
 const url = require('url');
 const express = require('express');
 
+const cmacc = require('cmacc-compiler');
+
 const expressBodyParser = require('body-parser');
 
 const githubServices = require('../services/githubServices');
@@ -39,12 +41,12 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
     }
   }
 
-  const cmacc = githubServices.getCmacc(req.context, token);
+  const doc = githubServices.getCmacc(req.context, token);
   const user = githubServices.getUser(token);
   const commit = githubServices.getCommit(req.context, token);
   const branches = githubServices.getBranches(req.context, token);
 
-  Promise.all([cmacc, user, branches, commit]).then(x => {
+  Promise.all([doc, user, branches, commit]).then(x => {
 
     obj.context = req.context;
     obj.user = x[1];
@@ -72,37 +74,29 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
     }
 
     if (req.context.format === 'group') {
-      const openTags = [
-        'heading_open',
-        'paragraph_open',
-        'ordered_list_open',
-      ];
 
-      var groups = x[0].reduce((acc, cur) => {
-        if (openTags.indexOf(cur.type) >= 0) {
-          acc.push([cur])
-        } else {
-          acc[(acc.length - 1)].push(cur)
+      function transfrom(x) {
+        if(x.variable){
+          console.log(x)
+          x.type = 'htmlblock';
+          x.content = `<cmacc variable="${x.variable}">${x.content}</cmacc>`;
         }
-        return acc;
-      }, []);
 
-      obj.content = groups
-        .map((md) => {
-          const res = remarkable.render(md)
-          return res;
-        }).reduce((acc, cur) => {
-          acc += `<div class="block">${cur}</div>`
-          return acc
-        }, "");
-      res.render('group', obj);
+        if (x.children)
+          x.children = x.children.map(transfrom);
+        return x;
+      }
+
+      const data = x[0].map(transfrom);
+      obj.content = cmacc.remarkable.render(data, {});
+      res.render('cmacc', obj);
     }
 
     if (req.context.format === 'form') {
-      req.context.format = 'source'
+      req.context.format = 'source';
       obj.path = req.path;
-      obj.content = x[0].replace(/{{(.*)}}/g, (match, val) => {
-        return `<input type="text"  name="data.${val}" />`
+      obj.content = x[0].replace(/{{([^}]*)}}/g, (match, val) => {
+        return `<input type="text"  name="data.${val}" data-variable="${val}" />`
       });
       res.render('form', obj);
 
@@ -113,14 +107,15 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
       res.render('edit', obj);
     }
 
-  }).catch(x => console.log(x))
+  })
+    .catch(console.error)
 
 });
 
 router.post('/:user/:repo/:branch/*', (req, res) => {
   githubServices.saveCommit(req.body.message, req.body.content, req.context, req.token)
     .then((x) => {
-      console.log('res', x)
+      // console.log('res', x)
       res.redirect(req.path)
     })
 });

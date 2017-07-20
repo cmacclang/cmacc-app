@@ -26,3 +26,21 @@
 
 </form>
 
+
+<script>
+  $(document).ready(function () {
+    var map = {}
+    $('[data-variable]').each(function (index, el) {
+      var attr = el.getAttribute('data-variable');
+      map[attr] = map[attr] || [];
+      map[attr].push(el)
+      $(el).keyup(function(ev){
+        map[attr].forEach(function (x) {
+          $(x).val(ev.target.value)
+        })
+      })
+
+    })
+  });
+</script>
+

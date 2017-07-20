@@ -19,7 +19,7 @@ const authRoute = (req, res, next) => {
   }
 
   if (!req.session['token']) {
-    const url = `https://github.com/login/oauth/authorize?scope=user:email,repo,write:org&client_id=${clientId}`;
+    const url = `https://github.com/login/oauth/authorize?scope=user:email,repo,gist,write:org&client_id=${clientId}`;
     req.session['redirect'] = req.path;
     return res.redirect(url);
   }
