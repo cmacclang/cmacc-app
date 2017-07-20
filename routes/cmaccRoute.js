@@ -96,7 +96,7 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
       req.context.format = 'source';
       obj.path = req.path;
       obj.content = x[0].replace(/{{([^}]*)}}/g, (match, val) => {
-        return `<input type="text"  name="data.${val}" data-variable="${val}" />`
+        return `<input type="text" placeholder="${val}" name="data.${val}" data-variable="${val}" />`
       });
       res.render('form', obj);
 
