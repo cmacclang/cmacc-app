@@ -1,3 +1,15 @@
+<style>
+  cmacc {
+    border: 1px dashed purple;
+    cursor: pointer;
+  }
+
+  cmacc:hover {
+    background-color: lightpink;
+  }
+
+</style>
+
 <nav style="margin-bottom: 20px">
   {{> info }}
 </nav>
@@ -11,3 +23,13 @@
 {{else}}
   {{{content}}}
 {{/if}}
+
+<script>
+  $(document).ready(function () {
+    $('cmacc').each(function(i, el){
+      $(el).attr('data-toggle', 'tooltip');
+      $(el).attr('title', $(el).attr('variable'));
+    });
+    $('cmacc').tooltip();
+  })
+</script>

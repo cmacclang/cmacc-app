@@ -89,7 +89,7 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
 
       const data = x[0].map(transfrom);
       obj.content = cmacc.remarkable.render(data, {});
-      res.render('cmacc', obj);
+      res.render('group', obj);
     }
 
     if (req.context.format === 'form') {

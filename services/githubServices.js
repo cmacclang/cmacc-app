@@ -19,7 +19,10 @@ const getCmacc = function (context, token) {
 
 
   if (context.format === 'source' || context.format === 'edit' ) {
-    return cmacc.loader(location).then(x => x.data)
+    const opts= {
+      token
+    }
+    return cmacc.loader(location, opts).then(x => x.data)
   }
 
   const ast = cmacc.compile(location, opts)
