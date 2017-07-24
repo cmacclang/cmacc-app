@@ -108,7 +108,11 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
     }
 
   })
-    .catch(console.error)
+    .catch(e => {
+      console.log(e);
+      obj.content = e.stack;
+      res.render('error', obj);
+    })
 
 });
 
