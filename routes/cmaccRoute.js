@@ -61,7 +61,8 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
     if (req.context.format === 'source') {
       obj.source = true;
       obj.content = x[0].replace(/\[(.*)\]/g, (res, link) => {
-        const target = url.resolve(req.path, link)
+        var target = url.resolve(req.path, link)
+        target = target.replace('github://', '');
         return `<a href="${target}">${res}</a>`
       });
       res.render('cmacc', obj);
