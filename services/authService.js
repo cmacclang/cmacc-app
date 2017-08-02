@@ -5,6 +5,8 @@ const clientId = process.env.GITHUB_CLIENT_ID
 const clientSecret = process.env.GITHUB_CLIENT_SECRET
 const redirectUri = process.env.GITHUB_REDIRECT_URI
 
+const authUrl = process.env.GITHUB_AUTH_URL;
+
 const getToken = function (code) {
 
   const input = {
@@ -14,7 +16,7 @@ const getToken = function (code) {
     code: code,
   };
 
-  const url = 'https://github.com/login/oauth/access_token?' + querystring.stringify(input);
+  const url = `${authUrl}/access_token?${querystring.stringify(input)}`;
   const opts = {
     method: 'POST',
   };
