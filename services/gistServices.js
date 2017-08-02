@@ -5,12 +5,12 @@ const cmacc = require('cmacc-compiler');
 
 const fetch = require('node-fetch');
 
-const base = 'https://api.github.com';
+const apiUrl = process.env.GITHUB_API_URL;
 
 const findGists = function (token) {
 
   const urlPath = path.join('gists');
-  const location = url.resolve(base, urlPath);
+  const location = url.resolve(apiUrl, urlPath);
 
   const opts = {
     headers: {
