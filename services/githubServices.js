@@ -64,7 +64,7 @@ const getUser = (token) => {
       'Authorization': "token " + token
     }
   };
-
+  console.log('getUser', location, opts)
   return fetch(location, opts)
     .then(x => x.json())
 
@@ -81,6 +81,7 @@ const getCommit = (context, token) => {
     }
   };
 
+  console.log('getCommit', location, opts)
   return fetch(location, opts)
     .then(x => x.json())
 
@@ -96,7 +97,7 @@ const getBranches = (context, token) => {
       'Authorization': "token " + token
     }
   };
-
+  console.log('getBranches', location, opts)
   return fetch(location, opts)
     .then(x => x.json())
 
@@ -112,7 +113,7 @@ const saveCommit = (message, content, context, token) => {
       'Authorization': "token " + token
     }
   };
-
+  console.log('saveCommit', location, opts)
   return fetch(location + '?ref=' + context.branch, opts)
     .then((x) => {
       return x.json();
