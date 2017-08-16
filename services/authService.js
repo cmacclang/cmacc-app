@@ -26,6 +26,10 @@ const getToken = function (code) {
   return fetch(url, opts)
     .then(x => x.text())
     .then(x => {
+      console.log("access_token response", url);
+      return x;
+    })
+    .then(x => {
       const res = querystring.parse(x)
       return res['access_token']
     })
