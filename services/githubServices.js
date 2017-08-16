@@ -14,6 +14,8 @@ const getCmacc = function (context, token) {
     githubApiUrl: apiUrl
   };
 
+  console.log("Token", token)
+
   const base = 'github:///'
   const urlPath = path.join(context.user, context.repo, context.branch, context.path);
   const location = url.resolve(base, urlPath);
