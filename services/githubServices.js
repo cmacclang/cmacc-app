@@ -10,18 +10,15 @@ const apiUrl = process.env.GITHUB_API_URL;
 const getCmacc = function (context, token) {
 
   const opts = {
-    token
-  }
+    token,
+    githubApiUrl: apiUrl
+  };
 
   const base = 'github:///'
   const urlPath = path.join(context.user, context.repo, context.branch, context.path);
   const location = url.resolve(base, urlPath);
 
-
   if (context.format === 'source' || context.format === 'edit' ) {
-    const opts= {
-      token
-    }
     return cmacc.loader(location, opts).then(x => x.data)
   }
 
