@@ -26,7 +26,7 @@ const getToken = function (code) {
   return fetch(url, opts)
     .then(x => x.text())
     .then(x => {
-      console.log("access_token response", url);
+      console.log("access_token response", x);
       return x;
     })
     .then(x => {
