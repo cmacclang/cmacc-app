@@ -21,6 +21,8 @@ const getToken = function (code) {
     method: 'POST',
   };
 
+  console.log("access_token url", url);
+
   return fetch(url, opts)
     .then(x => x.text())
     .then(x => {
