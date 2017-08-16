@@ -57,7 +57,7 @@ const getCmacc = function (context, token) {
 const getUser = (token) => {
 
 
-  const location = url.resolve(apiUrl, '/user');
+  const location = url.resolve(apiUrl, 'user');
 
   const opts = {
     headers: {
