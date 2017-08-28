@@ -21,7 +21,7 @@ const findAll = function (token) {
   return fetch(location, opts)
     .then(x => x.json())
     .then(x => x
-      .filter(y => y.files.filter())
+      //.filter(y => y.files.filter())
       .map(y => {
         console.log(y)
         return {
