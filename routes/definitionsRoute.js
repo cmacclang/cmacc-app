@@ -94,13 +94,15 @@ router.get('/definitions/edit/:definition/:from/:to', (req, res) => {
     obj.definition = context.definition;
     obj.user = x[0];
     obj.from = new Buffer(x[1].content, 'base64');
-    obj.to = new Buffer(x[2].content, 'base64');
 
-    console.log(x[1])
+    if(x[2]){
+      obj.to = new Buffer(x[2].content, 'base64');
+    }
 
     res.render('definitions_edit', obj);
 
-  });
+  })
+
 });
 
 module.exports = router;

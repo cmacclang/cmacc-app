@@ -67,7 +67,14 @@ const getFiles = function (owner, repo, path1, token) {
 
   console.log('getFiles', location, opts)
   return fetch(location, opts)
-    .then(x => x.json())
+    .then(x => {
+      if(x.status === 200){
+        return x.json()
+      }else{
+        return null;
+      }
+    })
+
 
 };
 
