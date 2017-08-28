@@ -30,6 +30,7 @@ app.use('/assets', express.static('assets'));
 app.use(require('./routes/authRoute'));
 app.use(require('./routes/contractRoute'));
 app.use(require('./routes/definitionsRoute'));
+app.use(require('./routes/gistsRoute'));
 app.use(require('./routes/cmaccRoute'));
 app.use(require('./routes/indexRoute'));
 
