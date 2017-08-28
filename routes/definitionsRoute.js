@@ -83,7 +83,7 @@ router.get('/definitions/edit/:definition/:from/:to', (req, res) => {
 
   const user = githubServices.getUser(token);
   const fromPath = context.from.toUpperCase() + '/' + context.definition + '.cmacc';
-  const toPath = context.from.toUpperCase() + '/' + context.definition + '.cmacc';
+  const toPath = context.to.toUpperCase() + '/' + context.definition + '.cmacc';
   const definitionsFrom = githubServices.getFiles('cmacclang', 'cmacc-lib-definitions', fromPath, token);
   const definitionsTo = githubServices.getFiles('cmacclang', 'cmacc-lib-definitions', toPath, token);
 
