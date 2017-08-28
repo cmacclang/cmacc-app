@@ -5,6 +5,20 @@
     <img src="/assets/images/logo.png" width="30" height="30" class="d-inline-block align-top" alt=""> Cmacc
   </a>
 
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Repos<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/definitions">Definitions</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Contracts</a>
+      </li>
+    </ul>
+  </div>
+
   {{#if user}}
     <div class="collapse navbar-collapse">
 
@@ -15,8 +29,8 @@
       <div class="my-2 my-md-0">
         <img src="{{user.avatar_url}}" width="30" height="30" class="d-inline-block align-middle" alt="">
         <span class="navbar-text">{{user.name}}</span>
-
       </div>
+
     </div>
   {{/if}}
 

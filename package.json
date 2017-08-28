@@ -16,6 +16,7 @@
     "express": "^4.15.3",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.3",
+    "font-awesome": "^4.7.0",
     "github": "^9.2.0",
     "http-proxy-middleware": "^0.17.4",
     "node-fetch": "^1.7.1"

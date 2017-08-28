@@ -6,7 +6,6 @@ const cmacc = require('cmacc-compiler');
 const expressBodyParser = require('body-parser');
 
 const githubServices = require('../services/githubServices');
-const remarkable = require('cmacc-compiler').remarkable;
 
 const router = express.Router();
 

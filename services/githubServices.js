@@ -54,6 +54,23 @@ const getCmacc = function (context, token) {
 
 };
 
+const getFiles = function (owner, repo, path1, token) {
+
+  const urlPath = path.join('repos', owner, repo, 'contents', path1);
+  const location = url.resolve(apiUrl, urlPath);
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+
+  console.log('getFiles', location, opts)
+  return fetch(location, opts)
+    .then(x => x.json())
+
+};
+
 const getUser = (token) => {
 
 
@@ -146,4 +163,4 @@ const saveCommit = (message, content, context, token) => {
 };
 
 
-module.exports = {getCmacc, getUser, getCommit, getBranches, saveCommit};
+module.exports = {getCmacc, getFiles, getUser, getCommit, getBranches, saveCommit};
