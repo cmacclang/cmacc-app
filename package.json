@@ -12,7 +12,7 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "bootstrap": "^4.0.0-alpha.6",
-    "cmacc-compiler": "2.0.9",
+    "cmacc-compiler": "2.0.10",
     "express": "^4.15.3",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.3",
