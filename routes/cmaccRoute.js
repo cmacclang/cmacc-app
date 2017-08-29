@@ -1,12 +1,9 @@
 const url = require('url');
 const express = require('express');
 
-const cmacc = require('cmacc-compiler');
-
 const expressBodyParser = require('body-parser');
 
 const githubServices = require('../services/githubServices');
-const remarkable = require('cmacc-compiler').remarkable;
 
 const router = express.Router();
 
@@ -27,6 +24,8 @@ router.use('/:user/:repo/:branch/*', (req, res, next) => {
 });
 
 router.get('/:user/:repo/:branch/*', (req, res) => {
+
+  const cmacc = require('cmacc-compiler');
 
   const token = req.session['token'];
 
