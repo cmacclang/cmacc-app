@@ -5,6 +5,8 @@ const expressHandlebars = require('express-handlebars');
 const proxy = require('http-proxy-middleware');
 const fetch = require('node-fetch');
 
+const fs = require('fs');
+
 const port = process.env.PORT || 3000;
 const secret = process.env.SECRET || "CmaccSecret";
 
@@ -12,7 +14,7 @@ const clientId = process.env.GITHUB_CLIENT_ID;
 const clientSecret = process.env.GITHUB_CLIENT_SECRET;
 
 // Set globals
-global.fs = null;
+global.fs = fs;
 global.fetch = fetch;
 
 const app = express();

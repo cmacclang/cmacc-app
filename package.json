@@ -12,13 +12,16 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "bootstrap": "^4.0.0-alpha.6",
-    "cmacc-compiler": "2.0.14",
+    "cmacc-compiler": "2.0.18",
     "express": "^4.15.3",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.3",
     "font-awesome": "^4.7.0",
     "github": "^9.2.0",
     "http-proxy-middleware": "^0.17.4",
-    "node-fetch": "^1.7.1"
+    "node-fetch": "^1.7.1",
+    "cmacc-lib-geo": "2.0.1",
+    "cmacc-lib-id": "2.0.1",
+    "cmacc-lib-lang": "2.0.1"
   }
 }
