@@ -1,4 +1,4 @@
-# Make contracts smart
+# Make contracts Wise (not just Smart)
 An easy 3 steps process to define the legal context of any transaction and automate the execution of the contract
 
 ## $ CmaccLang = [./CommonAccord] + {{punctuation}}
