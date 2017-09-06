@@ -20,8 +20,16 @@
     "github": "^9.2.0",
     "http-proxy-middleware": "^0.17.4",
     "node-fetch": "^1.7.1",
-    "cmacc-lib-geo": "2.0.1",
+
+    "cmacc-lib-acct": "2.0.0",
+    "cmacc-lib-geo": "2.0.3",
     "cmacc-lib-id": "2.0.1",
-    "cmacc-lib-lang": "2.0.1"
+    "cmacc-lib-lang": "2.0.3",
+    "cmacc-example-geo": "2.0.1",
+    "cmacc-example-acct": "2.0.1",
+    "cmccc-lib-definitions": "2.0.1",
+    "cmacc-lib-generalclauses": "2.0.0",
+    "cmacc-lib-nl": "2.0.3",
+    "cmacc-lib-us": "2.0.4"
   }
 }
