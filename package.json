@@ -24,12 +24,13 @@
     "cmacc-lib-geo": "2.0.3",
     "cmacc-example-acct": "2.0.1",
     "cmacc-lib-definitions": "2.0.1",
-    "cmacc-lib-generalclauses": "2.0.0",
+    "cmacc-lib-generalclauses": "2.0.2",
     "cmacc-lib-nl": "2.0.3",
     "cmacc-example-geo": "2.0.1",
-    "cmacc-example-id": "2.0.4",
+    "cmacc-example-id": "2.0.6",
     "cmacc-lib-id": "2.0.1",
     "cmacc-lib-lang": "2.0.3",
-    "cmacc-lib-us": "2.0.6"
+    "cmacc-lib-us": "2.1.1",
+    "cmacc-lib-nda": "2.1.1"
   }
 }
