@@ -35,6 +35,7 @@ app.use(require('./routes/definitionsRoute'));
 app.use(require('./routes/gistsRoute'));
 app.use(require('./routes/cmaccRoute'));
 app.use(require('./routes/indexRoute'));
+app.use(require('./routes/formioRoute'));
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`)
