@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "bootstrap": "^4.0.0-alpha.6",
+    "bootstrap": "^4.0.0-beta",
     "cmacc-compiler": "cmacclang/cmacc-compiler",
     "cmacc-example-acct": "2.0.1",
     "cmacc-example-geo": "2.0.1",

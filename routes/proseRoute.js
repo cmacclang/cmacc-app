@@ -43,7 +43,9 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
       const split = path.split('.');
       const last = split.pop();
       const root = split.reduce((a, b) => a[b], ast);
-      const value = root[last]
+
+      const value = root[last];
+      const type = typeof value;
 
       console.log(root['$meta'])
 
@@ -57,13 +59,17 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
           <p class="form-control-static">${path}</p>
         </div>
         <div class="form-group">
+          <label >Type</label>
+          <p class="form-control-static">${type}</p>
+        </div>
+        <div class="form-group">
           <label for="variable" >Value</label>
           <textarea class="form-control" rows="5" id="variable">${value}</textarea>
         </div>
       </form>`;
 
       res.send({
-        type: typeof value,
+        type,
         path,
         value,
         template

@@ -5,13 +5,9 @@
     cursor: pointer;
   }
 
-  cmacc-placeholder-inline:hover {
-    background-color: lightpink;
-  }
-
   cmacc-placeholder-block {
     margin: -1px;
-    border: 1px dashed lightgreen;
+    border: 1px dashed green;
     display: block;
     cursor: pointer;
   }
@@ -63,11 +59,21 @@
       $(el).attr('title', $(el).attr('variable'));
     });
     cmaccElements.tooltip();
+
+    cmaccElements.mousemove(function (ev) {
+      cmaccElements.css("background-color", "");
+      $(ev.currentTarget).css("background-color", "lightgrey");
+      ev.preventDefault();
+      ev.stopPropagation();
+    });
+
     cmaccElements.click(function (ev) {
 
-      var path = $(ev.target).attr('variable');
+      var path = $(ev.currentTarget).attr('variable');
 
-      if(!path) return;
+      if (!path) {
+        return;
+      }
 
       var modal = $('#myModal')
 
