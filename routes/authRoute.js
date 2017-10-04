@@ -21,7 +21,7 @@ const authRoute = (req, res, next) => {
 
   if (!req.session['token']) {
     const url = `${authUrl}/authorize?scope=user:email,repo,gist,write:org&client_id=${clientId}`;
-    req.session['redirect'] = req.path;
+    req.session['redirect'] = req.url;
     return res.redirect(url);
   }
 

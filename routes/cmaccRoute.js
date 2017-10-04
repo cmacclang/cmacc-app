@@ -75,20 +75,9 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
 
     if (req.context.format === 'group') {
 
-      function transfrom(x) {
-        if(x.variable){
-          console.log(x)
-          x.type = 'htmlblock';
-          x.content = `<cmacc variable="${x.variable}">${x.content}</cmacc>`;
-        }
+      const ast = x[0];
 
-        if (x.children)
-          x.children = x.children.map(transfrom);
-        return x;
-      }
-
-      const data = x[0].map(transfrom);
-      obj.content = cmacc.remarkable.render(data, {});
+      obj.content = cmacc.remarkable.render(ast, true);
       res.render('group', obj);
     }
 

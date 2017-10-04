@@ -1,11 +1,19 @@
 <style>
-  cmacc {
+  cmacc-placeholder-inline {
+    margin: -1px;
     border: 1px dashed purple;
     cursor: pointer;
   }
 
-  cmacc:hover {
+  cmacc-placeholder-inline:hover {
     background-color: lightpink;
+  }
+
+  cmacc-placeholder-block {
+    margin: -1px;
+    border: 1px dashed lightgreen;
+    display: block;
+    cursor: pointer;
   }
 
 </style>
@@ -24,12 +32,60 @@
   {{{content}}}
 {{/if}}
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Prose object</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="path">Test</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" disabled>Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   $(document).ready(function () {
-    $('cmacc').each(function(i, el){
+
+    var cmaccElements = $('cmacc-placeholder-inline, cmacc-placeholder-block');
+
+    cmaccElements.each(function (i, el) {
       $(el).attr('data-toggle', 'tooltip');
       $(el).attr('title', $(el).attr('variable'));
     });
-    $('cmacc').tooltip();
+    cmaccElements.tooltip();
+    cmaccElements.click(function (ev) {
+
+      var path = $(ev.target).attr('variable');
+
+      if(!path) return;
+
+      var modal = $('#myModal')
+
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      var href = '/prose' + window.location.pathname + '?path=' + path
+      var opts = {
+        credentials: 'same-origin'
+      }
+      fetch(href, opts).then(function (res) {
+        modal.modal();
+        return res.json();
+      }).then(function (res) {
+        modal.find('.modal-body').html(res.template);
+      })
+
+    });
+
   })
 </script>

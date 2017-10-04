@@ -11,7 +11,7 @@ const getCmacc = function (context, token) {
 
   const opts = {
     token,
-    githubApiUrl: apiUrl
+    githubApiUrl: apiUrl,
   };
 
   console.log("Token", token)
@@ -48,7 +48,7 @@ const getCmacc = function (context, token) {
         return cmacc.render(x)
       })
       .then(x => {
-        return cmacc.remarkable.render(x)
+        return cmacc.remarkable.render(x, opts)
       })
   }
 

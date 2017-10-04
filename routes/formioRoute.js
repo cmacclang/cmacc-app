@@ -12,6 +12,13 @@ const router = express.Router();
 
 router.use(expressBodyParser.urlencoded({extended: false}));
 
+router.get('/formio/builder', (req, res) => {
+  const obj = {};
+  obj.context = req.context;
+
+  res.render('formio', obj);
+});
+
 router.get('/formio/cmacc-escrow/:id', (req, res) => {
   const id = req.params.id;
 

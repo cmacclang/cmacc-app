@@ -10,9 +10,6 @@ const fs = require('fs');
 const port = process.env.PORT || 3000;
 const secret = process.env.SECRET || "CmaccSecret";
 
-const clientId = process.env.GITHUB_CLIENT_ID;
-const clientSecret = process.env.GITHUB_CLIENT_SECRET;
-
 // Set globals
 global.fs = fs;
 global.fetch = fetch;
@@ -33,6 +30,7 @@ app.use(require('./routes/authRoute'));
 app.use(require('./routes/contractRoute'));
 app.use(require('./routes/definitionsRoute'));
 app.use(require('./routes/gistsRoute'));
+app.use(require('./routes/proseRoute'));
 app.use(require('./routes/cmaccRoute'));
 app.use(require('./routes/indexRoute'));
 app.use(require('./routes/formioRoute'));
