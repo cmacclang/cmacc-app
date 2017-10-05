@@ -20,4 +20,11 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/full_auth', (req, res) => {
+
+  const url = `${authUrl}/authorize?scope=user:email,repo,gist,write:org&client_id=${clientId}`;
+  req.session['redirect'] = req.url;
+  return res.redirect(url);
+});
+
 module.exports = router

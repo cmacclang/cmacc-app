@@ -77,6 +77,8 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
 
       const ast = x[0];
 
+      console.log('data', ast);
+
       obj.content = cmacc.remarkable.render(ast, true);
       res.render('group', obj);
     }

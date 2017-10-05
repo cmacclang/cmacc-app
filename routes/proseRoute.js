@@ -92,7 +92,7 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
       if(!options && type === 'object') {
         template += `<div class="form-group">
           <label for="variable" >Value</label>
-          <p class="form-control-static">${value}</p>
+          <textarea class="form-control" rows="10">${root[last]['$data']}</textarea>
         </div>`;
       }
 
