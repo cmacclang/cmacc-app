@@ -44,13 +44,16 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
       const last = split.pop();
       const root = split.reduce((a, b) => a[b], ast);
 
-      const value = root[last];
-      const type = typeof value;
+      const type = typeof root[last];
+      const value = typeof root[last] === 'string' ? root[last] : root[last]['$value'];
+      const meta = root[last]['$meta'];
+      const options = root['$meta']['Options'];
 
-      console.log(root['$meta'])
+      console.log(root[last]['$meta'])
+      console.log(options)
 
-      const template = `<form>
-        <div class="form-group">
+      let template = `<form>`;
+      template += `<div class="form-group">
           <label >File</label>
           <p class="form-control-static">${root['$file']}</p>
         </div>
@@ -61,12 +64,39 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
         <div class="form-group">
           <label >Type</label>
           <p class="form-control-static">${type}</p>
-        </div>
-        <div class="form-group">
+        </div>`;
+
+      if(options){
+        template += `<div class="form-group">`;
+        template += `<label for="option">Options</label>`;
+        template += `<select id="option" class="form-control" >`;
+        template += options.map(x => `<option ${last == x ? 'selected' : ''}>${x}</option>`).join('');
+        template += `</select>`;
+        template += `</div>`;
+      }
+
+      if (meta) {
+        template += `<div class="form-group">
+          <label >Meta</label>
+          <p class="form-control-static">${JSON.stringify(meta)}</p>
+        </div>`;
+      }
+
+      if (!options && type === 'string') {
+        template += `<div class="form-group">
           <label for="variable" >Value</label>
           <textarea class="form-control" rows="5" id="variable">${value}</textarea>
-        </div>
-      </form>`;
+        </div>`;
+      }
+
+      if(!options && type === 'object') {
+        template += `<div class="form-group">
+          <label for="variable" >Value</label>
+          <p class="form-control-static">${value}</p>
+        </div>`;
+      }
+
+      template += `</form>`;
 
       res.send({
         type,
