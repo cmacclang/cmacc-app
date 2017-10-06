@@ -28,6 +28,7 @@ app.use('/assets', express.static('assets'));
 app.use('/dist', express.static('dist'));
 
 app.use(require('./routes/authRoute'));
+app.use(require('./routes/apiRoute'));
 app.use(require('./routes/contractRoute'));
 app.use(require('./routes/definitionsRoute'));
 app.use(require('./routes/gistsRoute'));

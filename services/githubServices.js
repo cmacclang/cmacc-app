@@ -14,8 +14,6 @@ const getCmacc = function (context, token) {
     githubApiUrl: apiUrl,
   };
 
-  console.log("Token", token)
-
   const base = 'github:///'
   const urlPath = path.join(context.user, context.repo, context.branch, context.path);
   const location = url.resolve(base, urlPath);
@@ -38,14 +36,14 @@ const getCmacc = function (context, token) {
   if (context.format === 'group') {
     return ast
       .then(x => {
-        return cmacc.render(x)
+        return cmacc.render(x, opts)
       })
   }
 
   if (context.format === 'html' || context.format === 'form') {
     return ast
       .then(x => {
-        return cmacc.render(x)
+        return cmacc.render(x, opts)
       })
       .then(x => {
         return cmacc.remarkable.render(x, opts)
@@ -65,7 +63,6 @@ const getFiles = function (owner, repo, path1, token) {
     }
   };
 
-  console.log('getFiles', location, opts)
   return fetch(location, opts)
     .then(x => {
       if(x.status === 200){
@@ -88,11 +85,11 @@ const getUser = (token) => {
       'Authorization': "token " + token
     }
   };
-  console.log('getUser', location, opts)
+
   return fetch(location, opts)
     .then(x => x.json())
 
-}
+};
 
 const getCommit = (context, token) => {
 

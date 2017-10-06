@@ -49,9 +49,6 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
       const meta = root[last]['$meta'];
       const options = root['$meta']['Options'];
 
-      console.log(root[last]['$meta'])
-      console.log(options)
-
       let template = `<form>`;
       template += `<div class="form-group">
           <label >File</label>
@@ -75,7 +72,7 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
         template += `</div>`;
       }
 
-      if (meta) {
+      if (Object.getOwnPropertyNames(meta).length > 0) {
         template += `<div class="form-group">
           <label >Meta</label>
           <p class="form-control-static">${JSON.stringify(meta)}</p>
@@ -92,7 +89,7 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
       if(!options && type === 'object') {
         template += `<div class="form-group">
           <label for="variable" >Value</label>
-          <textarea class="form-control" rows="10">${root[last]['$data']}</textarea>
+          <textarea class="form-control" rows="20">${root[last]['$data']}</textarea>
         </div>`;
       }
 
@@ -106,8 +103,8 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
       });
     })
     .catch(e => {
-      console.log('error', e)
-      res.send('hello');
+      console.error(e)
+      res.send('ERROR');
     });
 
 });

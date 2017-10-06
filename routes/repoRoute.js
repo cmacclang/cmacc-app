@@ -17,7 +17,6 @@ router.get('/:user/:repo', (req, res) => {
   const files = githubServices.getFiles('cmacclang', 'cmacc-example-helloworld', 'master', token)
 
   Promise.all([user, files]).then(x => {
-    console.log(files);
     const opts = {
       user: x[0]
     }

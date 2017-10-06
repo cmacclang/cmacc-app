@@ -45,62 +45,60 @@ router.get('/:user/:repo/:branch/*', (req, res) => {
   const commit = githubServices.getCommit(req.context, token);
   const branches = githubServices.getBranches(req.context, token);
 
-  Promise.all([doc, user, branches, commit]).then(x => {
+  Promise.all([doc, user, branches, commit])
+    .then(x => {
 
-    obj.context = req.context;
-    obj.user = x[1];
-    obj.branches = x[2];
-    obj.commit = x[3];
+      obj.context = req.context;
+      obj.user = x[1];
+      obj.branches = x[2];
+      obj.commit = x[3];
 
-    if (req.context.format === 'html') {
-      obj.content = x[0];
-      res.render('cmacc', obj);
-    }
+      if (req.context.format === 'html') {
+        obj.content = x[0];
+        res.render('cmacc', obj);
+      }
 
-    if (req.context.format === 'source') {
-      obj.source = true;
-      obj.content = x[0].replace(/\[(.*)\]/g, (res, link) => {
-        var target = url.resolve(req.path, link)
-        target = target.replace('github://', '');
-        return `<a href="${target}">${res}</a>`
-      });
-      res.render('cmacc', obj);
-    }
+      if (req.context.format === 'source') {
+        obj.source = true;
+        obj.content = x[0].replace(/\[(.*)\]/g, (res, link) => {
+          var target = url.resolve(req.path, link)
+          target = target.replace('github://', '');
+          return `<a href="${target}">${res}</a>`
+        });
+        res.render('cmacc', obj);
+      }
 
-    if (req.context.format === 'ast') {
-      obj.source = true;
-      obj.content = JSON.stringify(x[0], null, 2);
-      res.render('cmacc', obj);
-    }
+      if (req.context.format === 'ast') {
+        obj.source = true;
+        obj.content = JSON.stringify(x[0], null, 2);
+        res.render('cmacc', obj);
+      }
 
-    if (req.context.format === 'group') {
+      if (req.context.format === 'group') {
 
-      const ast = x[0];
+        const ast = x[0];
 
-      console.log('data', ast);
+        obj.content = cmacc.remarkable.render(ast, true);
+        res.render('group', obj);
+      }
 
-      obj.content = cmacc.remarkable.render(ast, true);
-      res.render('group', obj);
-    }
+      if (req.context.format === 'form') {
+        req.context.format = 'source';
+        obj.path = req.path;
+        obj.content = x[0].replace(/{{([^}]*)}}/g, (match, val) => {
+          return `<input type="text" placeholder="${val}" name="data.${val}" data-variable="${val}" />`
+        });
+        res.render('form', obj);
 
-    if (req.context.format === 'form') {
-      req.context.format = 'source';
-      obj.path = req.path;
-      obj.content = x[0].replace(/{{([^}]*)}}/g, (match, val) => {
-        return `<input type="text" placeholder="${val}" name="data.${val}" data-variable="${val}" />`
-      });
-      res.render('form', obj);
+      }
 
-    }
+      if (req.context.format === 'edit') {
+        obj.content = x[0];
+        res.render('edit', obj);
+      }
 
-    if (req.context.format === 'edit') {
-      obj.content = x[0];
-      res.render('edit', obj);
-    }
-
-  })
+    })
     .catch(e => {
-      console.log(e);
       obj.content = e.stack;
       res.render('error', obj);
     })

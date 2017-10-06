@@ -23,7 +23,6 @@ const findAll = function (token) {
     .then(x => x
       //.filter(y => y.files.filter())
       .map(y => {
-        console.log(y)
         return {
           id: y.id,
           description: y.description,
@@ -50,7 +49,6 @@ const create = function (token) {
     .then(x => x
       .filter(y => y.files.filter())
       .map(y => {
-        console.log(y)
         return {
           id: y.id,
           description: y.description,
