@@ -22,6 +22,10 @@ const getCmacc = function (context, token) {
     return cmacc.loader(location, opts).then(x => x.data)
   }
 
+  if (context.format === 'assemble') {
+    return cmacc.assemble(location, opts);
+  }
+
   const ast = cmacc.compile(location, opts)
 
     .then(x => {

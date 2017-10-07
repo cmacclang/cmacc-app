@@ -1,0 +1,82 @@
+<style>
+  cmacc-placeholder-inline {
+    margin: -1px;
+    border: 1px dashed purple;
+    cursor: pointer;
+  }
+
+  cmacc-placeholder-block {
+    margin: -1px;
+    border: 1px dashed green;
+    display: block;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+
+  function remoteLoader(urlObj) {
+    var ref = `/loader/github${urlObj.path}`
+    return fetch(ref, {credentials: 'same-origin'}).then(function (res) {
+      return res.json();
+    })
+  }
+
+  const loaders = {
+    'file:': remoteLoader,
+    'yarn:': remoteLoader,
+    'http:': remoteLoader,
+    'https:': remoteLoader,
+    'github:': remoteLoader
+  };
+
+  const opts = {
+    base: 'github:///{{context.user}}/{{context.repo}}/{{context.branch}}/{{context.path}}',
+    loaders
+  }
+
+  var ref = '/api/{{context.user}}/{{context.repo}}/{{context.branch}}/{{context.path}}?format=assemble';
+  var ast = fetch(ref, {credentials: 'same-origin'}).then(function (res) {
+    return res.json()
+  }).then(function (res) {
+    return window.Cmacc.reduce(res)
+  });
+
+  const mutations = {
+    'intro.doc_Title': 'Willem Veelenturf',
+    'definitions.xnum': '22',
+    'intro.p1_NEA.adr_12': 'adressss 123'
+  };
+
+  function render () {
+    var random = Math.random();
+    console.log(random)
+    ast.then(function (ast) {
+      Object.keys(mutations).forEach(function(key) {
+        const split = key.split('.');
+        const last = split.pop();
+        const sub = split.reduce((a,b) => a[b], ast)
+        sub[last] = mutations[key] + random
+      });
+      return ast
+    }).then(function (ast) {
+      return window.Cmacc.render(ast, opts)
+    }).then(function (res) {
+      return window.Cmacc.remarkable.render(res, true)
+    }).then(function (res) {
+      $('#cmacc').html(res)
+    })
+  }
+
+
+  $(document).ready(function () {
+
+    setInterval(render, 5000)
+
+
+  });
+</script>
+
+<div id="cmacc">
+
+</div>

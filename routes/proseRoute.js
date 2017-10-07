@@ -26,6 +26,13 @@ router.use('/prose/:user/:repo/:branch/*', (req, res, next) => {
 });
 
 router.get('/prose/:user/:repo/:branch/*', (req, res) => {
+  const obj = {
+    context: req.context
+  };
+  res.render('prose', obj);
+});
+
+router.get('/prose1/:user/:repo/:branch/*', (req, res) => {
 
   const token = req.session['token'];
 
@@ -72,7 +79,7 @@ router.get('/prose/:user/:repo/:branch/*', (req, res) => {
         template += `</div>`;
       }
 
-      if (Object.getOwnPropertyNames(meta).length > 0) {
+      if (meta && Object.getOwnPropertyNames(meta).length > 0) {
         template += `<div class="form-group">
           <label >Meta</label>
           <p class="form-control-static">${JSON.stringify(meta)}</p>

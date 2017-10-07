@@ -27,25 +27,6 @@
 
   <script src="/dist/bundle.js"></script>
 
-  <script>
-    var doc = "$ hello = 'World' \n\n Hello \{\{hello\}\}";
-    Cmacc.compile(doc)
-            .then(function (ast) {
-              console.log(ast)
-              return ast
-            })
-            .then(function (ast) {
-              return Cmacc.render(ast)
-            })
-            .then(function(ast){
-              return Cmacc.remarkable.render(ast)
-            })
-            .then(function (html) {
-              console.log(html)
-            });
-
-  </script>
-
 </head>
 <body>
 

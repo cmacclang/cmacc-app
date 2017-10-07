@@ -7139,6 +7139,7 @@ function assemble(file, opts) {
         .then(x => {
           return {
             file: res.file,
+            data: res.data,
             type: md.type,
             md: md.md,
             meta: md.meta,
@@ -7219,9 +7220,9 @@ function reduce(ast) {
       const match = x.data.match(MATCH_FUNCTION)
       const func = match[1];
       const args = match[2] ? match[2].split(",") : [];
-      const input = args.map(x => find(x, ast)).map(x => x.data)
+      const input = args.map(x => ast[x]).map(x => x.data)
       const val = acc[func];
-      const data = val.apply({}, input)
+      const data = val.apply({}, input);
       acc[x.name] = data;
       return acc;
     }
@@ -7288,6 +7289,7 @@ function reduce(ast) {
   }
 
   vars['$file'] = ast.file;
+  vars['$data'] = ast.data;
   vars['$md'] = ast.md;
   vars['$meta'] = ast.meta;
   vars['$type'] = ast.type;
@@ -25466,7 +25468,7 @@ module.exports.safeDump = safeDump;
 const helpers = __webpack_require__(115);
 const resolve = __webpack_require__(127);
 
-function render(ast, state) {
+function render(ast, opts, state) {
 
   if (!state) {
     state = {
@@ -25475,10 +25477,13 @@ function render(ast, state) {
   }
 
   if (ast['$md']) {
+
     return Promise.all(ast['$md']
       .map(x => {
 
-        x.children = x.children || [];
+        const obj = JSON.parse(JSON.stringify(x))
+
+        obj.children = obj.children || [];
 
         const types = [
           'text',
@@ -25487,23 +25492,24 @@ function render(ast, state) {
           'placeholder_block_close',
           'placeholder_inline_open',
           'placeholder_inline_close',
-        ]
+        ];
 
-        const children = x.children
-          .map(child => item(child).then((res) => {
-            if (Array.isArray(res) && res.reduce((acc, cur) => acc ? acc : (types.indexOf(cur.type) < 0), false)) {
-              throw new Error(`Cannot render ref inline for param: ${child.variable} in file ${ast['$file']}`);
-            }
-            return res;
-          }));
+        const children = obj.children
+          .map(child => item(child)
+            .then((res) => {
+              if (Array.isArray(res) && res.reduce((acc, cur) => acc ? acc : (types.indexOf(cur.type) < 0), false)) {
+                throw new Error(`Cannot render ref inline for param: ${child.variable} in file ${ast['$file']}`);
+              }
+              return res;
+            }));
 
         return Promise.all(children)
           .then(res => res.reduce((acc, val) => {
             return acc.concat(val);
           }, []))
           .then(res => {
-            x.children = res;
-            return item(x)
+            obj.children = res;
+            return item(obj)
           })
       }))
       .then(res => res.reduce((acc, val) => {
@@ -25518,17 +25524,22 @@ function render(ast, state) {
   function item(x) {
 
     if (x.type === 'htmlblock') {
-      x.content = x.content.replace(/{{([^}]*)}}/g, function (match, name) {
+      const content = x.content.replace(/{{([^}]*)}}/g, function (match, name) {
         return ast[name];
       });
-      return Promise.resolve(x);
+      const res = {
+        type: 'htmlblock',
+        content: content,
+        variable: x.variable,
+      };
+      return Promise.resolve(res);
     }
 
     if (x.type === 'placeholder_block' || x.type === 'placeholder_inline') {
 
       const match = x.content.match(/{{(?:#(.*)\s)?([^}]*)}}/);
 
-      return resolve(match[2], match[1], ast, state)
+      return resolve(match[2], match[1], ast, opts, state)
         .then(value => {
 
             if (value == null || typeof value === 'undefined') {
@@ -25587,7 +25598,7 @@ function render(ast, state) {
 
             if (typeof value === 'object') {
 
-              return render(value, state).then(res => {
+              return render(value, opts, state).then(res => {
                 if (x.type === 'placeholder_inline' && res.length === 3 && res[0].type === 'paragraph_open' && res[2].type === 'paragraph_close')
                   return [].concat(
                     {
@@ -25609,7 +25620,7 @@ function render(ast, state) {
                     {
                       type: x.type + '_close',
                       path: ast['$path'].concat(match[2]),
-                    });;
+                    });
               });
 
             }
@@ -25648,8 +25659,10 @@ module.exports = () => {
     return Promise.resolve(arr[arr.length - 1]);
   };
 
-  const reference = (ast) => {
-    const number = referenceState[ast['$file']];
+  const reference = (ref, ast) => {
+    const path = ref['$path'].join('.');
+    const number = referenceState[path];
+    console.log('+', ref['$path'], path, number)
     return Promise.resolve(number);
   };
 
@@ -25667,9 +25680,11 @@ module.exports = () => {
     }
 
     const number = sectionState.slice(0, pos).join('.');
+    const path = ast['$path'].join('.');
 
-    if (!referenceState[ast['$file']]) {
-      referenceState[ast['$file']] = number;
+    if (!referenceState[path]) {
+      referenceState[path] = number;
+      console.log('-', path, number)
     }
 
     return Promise.resolve(number)
@@ -26693,12 +26708,10 @@ module.exports = githubLoader;
 /* 127 */
 /***/ (function(module, exports) {
 
-function resolve(variable, helper, ast, state) {
+function resolve(variable, helper, ast, opts, state) {
 
-  const opts = {
-    base: ast['$file']
-  };
 
+  opts = opts || {base : ast['$file']}
 
   return Promise.resolve(variable)
     .then(variable => {
@@ -26748,9 +26761,9 @@ function resolve(variable, helper, ast, state) {
 
             const propAst = Object.getOwnPropertyDescriptor(sub, last).get.getAst();
             if (!matches[1]) {
-              return resolve(key, null, propAst, state)
+              return resolve(key, null, propAst, opts, state)
             } else {
-              return resolve(key, matches[1], propAst, state)
+              return resolve(key, matches[1], propAst, opts, state)
             }
 
           }))
@@ -26761,6 +26774,7 @@ function resolve(variable, helper, ast, state) {
 
     })
     .then(value => {
+
       if(helper && Array.isArray(value)){
         return  state.helpers[helper](value.join(''), ast, opts)
       }
