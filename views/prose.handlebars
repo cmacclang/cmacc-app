@@ -11,6 +11,12 @@
     display: block;
     cursor: pointer;
   }
+
+  cmacc-placeholder-inline[overwrite],  cmacc-placeholder-block[overwrite]{
+    background-color: lightcoral;
+  }
+
+
 </style>
 
 <script>
@@ -42,25 +48,41 @@
     return window.Cmacc.reduce(res)
   });
 
-  const mutations = {
-    'intro.doc_Title': 'Willem Veelenturf',
-    'definitions.xnum': '22',
-    'intro.p1_NEA.adr_12': 'adressss 123'
-  };
+  const mutations = {};
 
-  function render () {
-    var random = Math.random();
-    console.log(random)
-    ast.then(function (ast) {
-      Object.keys(mutations).forEach(function(key) {
+  function render() {
+
+    return ast.then(function (ast) {
+      // mutations
+      const res = Object.keys(mutations).map(function (key) {
         const split = key.split('.');
         const last = split.pop();
-        const sub = split.reduce((a,b) => a[b], ast)
-        sub[last] = mutations[key] + random
+        const sub = split.reduce((a, b) => a[b], ast)
+        const mutation = mutations[key];
+
+        if(/\r|\n/.exec(mutation)) {
+          return window.Cmacc.compile(mutation, opts)
+                  .then(x => {
+                    return x['$md']
+                  })
+                  .then(function (res) {
+
+                    if (Array.isArray(res)) {
+                      sub[last]['$md'] = res
+                    } else {
+                      sub[last] = res
+                    }
+                  });
+        } else{
+          sub[last] = mutation
+        }
       });
-      return ast
-    }).then(function (ast) {
-      return window.Cmacc.render(ast, opts)
+
+      return Promise.all(res).then(function () {
+        return window.Cmacc.render(ast, opts)
+      })
+
+
     }).then(function (res) {
       return window.Cmacc.remarkable.render(res, true)
     }).then(function (res) {
@@ -68,15 +90,114 @@
     })
   }
 
+  function bind(modal) {
+
+    var cmaccElements = $('cmacc-placeholder-inline, cmacc-placeholder-block');
+
+    cmaccElements.each(function (i, el) {
+      const path = $(el).attr('variable')
+      if(mutations[path]){
+        $(el).attr('overwrite', true)
+      }
+      $(el).attr('data-toggle', 'tooltip');
+      $(el).attr('title', path);
+    });
+    cmaccElements.tooltip();
+
+    cmaccElements.mousemove(function (ev) {
+      if($(ev.currentTarget))
+      cmaccElements.css("background-color", "");
+      $(ev.currentTarget).css("background-color", "lightgrey");
+      ev.preventDefault();
+      ev.stopPropagation();
+    });
+
+    cmaccElements.click(function (ev) {
+
+      var path = $(ev.currentTarget).attr('variable');
+
+      if (!path) {
+        return;
+      }
+
+      $('#form-file').text(path);
+
+      if (mutations[path]) {
+        $('#form-value').val(mutations[path]);
+      }
+
+      else {
+        ast.then(function (ast) {
+          const split = path.split('.');
+          const last = split.pop();
+          const sub = split.reduce((a, b) => a[b], ast)
+
+          if (typeof sub[last] === 'object') {
+            $('#form-value').val(sub[last]['$data']);
+          } else {
+            $('#form-value').val(sub[last]);
+          }
+
+        });
+
+      }
+
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      modal.modal('show')
+
+    });
+  }
+
 
   $(document).ready(function () {
 
-    setInterval(render, 5000)
+    var modal = $('#myModal');
+
+    render().then(x => bind(modal));
+
+    $('#form-save').click(function(){
+      const path = $('#form-file').text();
+      const value = $('#form-value').val();
+      mutations[path] = value;
+      render().then(x => bind(modal));
+      modal.modal('hide')
+    });
 
 
   });
 </script>
 
-<div id="cmacc">
+<!-- Modal -->
+<div id="cmacc"></div>
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Prose object</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label>File</label>
+            <p class="form-control-static" id="form-file"></p>
+          </div>
+          <div class="form-group">
+            <label for="variable">Value</label>
+            <textarea class="form-control" id="form-value" rows="20"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="form-save" type="button" class="btn btn-primary" >Save changes</button>
+      </div>
+    </div>
+  </div>
 </div>
