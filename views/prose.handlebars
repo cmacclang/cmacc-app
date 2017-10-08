@@ -21,10 +21,19 @@
 
 <script>
 
+  const loaderCache = {};
+
   function remoteLoader(urlObj) {
     var ref = `/loader/github${urlObj.path}`
+
+    if(loaderCache[ref])
+      return Promise.resolve(loaderCache[ref]);
+
     return fetch(ref, {credentials: 'same-origin'}).then(function (res) {
       return res.json();
+    }).then(function(res){
+      loaderCache[ref] = res;
+      return res
     })
   }
 
