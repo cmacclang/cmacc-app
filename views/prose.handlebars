@@ -12,7 +12,7 @@
     cursor: pointer;
   }
 
-  cmacc-placeholder-inline[overwrite],  cmacc-placeholder-block[overwrite]{
+  cmacc-placeholder-inline[overwrite], cmacc-placeholder-block[overwrite] {
     background-color: lightcoral;
   }
 
@@ -58,23 +58,39 @@
         const split = key.split('.');
         const last = split.pop();
         const sub = split.reduce((a, b) => a[b], ast)
-        const mutation = mutations[key];
 
-        if(/\r|\n/.exec(mutation)) {
-          return window.Cmacc.compile(mutation, opts)
+        const fallBack = sub[last];
+
+        if (/\r|\n/.exec(mutations[key])) {
+          return window.Cmacc.compile(mutations[key], opts)
                   .then(x => {
                     return x['$md']
                   })
                   .then(function (res) {
+                    Object.defineProperty(sub, last, {
+                      get: function () {
+                        if (mutations[key]) {
+                          if (Array.isArray(res)) {
+                            fallBack['$md'] = res
+                          } else {
+                            return res
+                          }
+                        }
+                        return fallBack
+                      }
+                    });
 
-                    if (Array.isArray(res)) {
-                      sub[last]['$md'] = res
-                    } else {
-                      sub[last] = res
-                    }
                   });
-        } else{
-          sub[last] = mutation
+        } else {
+
+          Object.defineProperty(sub, last, {
+            get: function () {
+              if (mutations[key]) {
+                return mutations[key]
+              }
+              return fallBack
+            }
+          });
         }
       });
 
@@ -96,7 +112,7 @@
 
     cmaccElements.each(function (i, el) {
       const path = $(el).attr('variable')
-      if(mutations[path]){
+      if (mutations[path]) {
         $(el).attr('overwrite', true)
       }
       $(el).attr('data-toggle', 'tooltip');
@@ -105,8 +121,8 @@
     cmaccElements.tooltip();
 
     cmaccElements.mousemove(function (ev) {
-      if($(ev.currentTarget))
-      cmaccElements.css("background-color", "");
+      if ($(ev.currentTarget))
+        cmaccElements.css("background-color", "");
       $(ev.currentTarget).css("background-color", "lightgrey");
       ev.preventDefault();
       ev.stopPropagation();
@@ -157,10 +173,18 @@
 
     render().then(x => bind(modal));
 
-    $('#form-save').click(function(){
+    $('#form-save').click(function () {
       const path = $('#form-file').text();
       const value = $('#form-value').val();
       mutations[path] = value;
+      render().then(x => bind(modal));
+      modal.modal('hide')
+    });
+
+    $('#form-remove').click(function () {
+      const path = $('#form-file').text();
+      delete mutations[path];
+      console.log(path, mutations)
       render().then(x => bind(modal));
       modal.modal('hide')
     });
@@ -196,7 +220,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="form-save" type="button" class="btn btn-primary" >Save changes</button>
+        <button id="form-remove" type="button" class="btn btn-danger">Remove changes</button>
+        <button id="form-save" type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
