@@ -32334,7 +32334,7 @@ class editor {
         if (!obj) {
           obj = {
             file: file,
-            content: mutation.path.split('.').reduce((a, b) => a[b], ast)['$data']
+            content: mutation['file'] ? mutation.path.split('.').reduce((a, b) => a[b], ast)['$data'] : ast['$data']
           };
           acc.push(obj);
         }
