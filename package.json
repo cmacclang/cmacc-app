@@ -14,6 +14,7 @@
     "body-parser": "^1.18.2",
     "bootstrap": "^4.0.0-beta",
     "cmacc-compiler": "cmacclang/cmacc-compiler",
+    "cmacc-editor": "cmacclang/cmacc-editor",
     "cmacc-example-acct": "2.0.1",
     "cmacc-example-geo": "2.0.1",
     "cmacc-example-id": "2.0.6",

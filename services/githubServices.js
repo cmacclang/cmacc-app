@@ -18,7 +18,7 @@ const getCmacc = function (context, token) {
   const urlPath = path.join(context.user, context.repo, context.branch, context.path);
   const location = url.resolve(base, urlPath);
 
-  if (context.format === 'source' || context.format === 'edit' ) {
+  if (context.format === 'source' || context.format === 'edit') {
     return cmacc.loader(location, opts).then(x => x.data)
   }
 
@@ -69,9 +69,9 @@ const getFiles = function (owner, repo, path1, token) {
 
   return fetch(location, opts)
     .then(x => {
-      if(x.status === 200){
+      if (x.status === 200) {
         return x.json()
-      }else{
+      } else {
         return null;
       }
     })
@@ -95,23 +95,6 @@ const getUser = (token) => {
 
 };
 
-const getCommit = (context, token) => {
-
-  const urlPath = path.join('repos', context.user, context.repo, 'commits', context.branch);
-  const location = url.resolve(apiUrl, urlPath);
-
-  const opts = {
-    headers: {
-      'Authorization': "token " + token
-    }
-  };
-
-  console.log('getCommit', location, opts)
-  return fetch(location, opts)
-    .then(x => x.json())
-
-};
-
 const getBranches = (context, token) => {
 
   const urlPath = path.join('repos', context.user, context.repo, 'branches');
@@ -128,27 +111,85 @@ const getBranches = (context, token) => {
 
 };
 
-const saveCommit = (message, content, context, token) => {
+const createBranch = (name, context, token) => {
 
-  const urlPath = path.join('repos', context.user, context.repo, 'contents', context.path);
-  const location = url.resolve(apiUrl, urlPath);
+  const urlPath = path.join('repos', context.user, context.repo, 'git/refs');
+  const ref = url.resolve(apiUrl, urlPath);
+
+  return getBranch(context, token)
+    .then(branch => {
+
+      console.log('createBranch', name, context, branch);
+
+      const body = {
+        ref: `refs/heads/${name}`,
+        sha: branch.object.sha
+      };
+
+      const opts = {
+        method: 'POST',
+        headers: {
+          'Authorization': "token " + token
+        },
+        body: JSON.stringify(body),
+      };
+
+      return fetch(ref, opts);
+    })
+    .then(x => x.json());
+
+};
+
+
+const getBranch = (context, token) => {
+
+  console.log('getBranch', context)
+
+  const urlPath = path.join('repos', context.user, context.repo, 'git/refs/heads', context.branch);
+  const ref = url.resolve(apiUrl, urlPath);
 
   const opts = {
     headers: {
       'Authorization': "token " + token
     }
   };
-  console.log('saveCommit', location, opts)
-  return fetch(location + '?ref=' + context.branch, opts)
+
+  return fetch(ref, opts)
+    .then(x => x.json());
+
+};
+
+const getCommit = (context, token) => {
+
+  const urlPath = path.join('repos', context.user, context.repo, 'contents', context.path);
+  const ref = url.resolve(apiUrl, urlPath) + '?ref=' + context.branch;
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+
+  return fetch(ref, opts)
     .then((x) => {
       return x.json();
     })
-    .then((x) => {
+
+};
+
+
+const saveCommit = (message, content, context, token) => {
+
+  const urlPath = path.join('repos', context.user, context.repo, 'contents', context.path);
+  const ref = url.resolve(apiUrl, urlPath) + '?ref=' + context.branch;
+
+  return getCommit(context, token)
+    .then((commit) => {
       const body = {
         path: context.path,
         message: message,
         branch: context.branch,
-        sha: x.sha,
+        sha: commit.sha,
         content: new Buffer(content).toString('base64')
       };
 
@@ -160,15 +201,11 @@ const saveCommit = (message, content, context, token) => {
         body: JSON.stringify(body),
       };
 
-      return fetch(location, opts);
+      return fetch(ref, opts);
     })
-
-    .then(x => x.json())
-    .then(x => {
-      return x;
-    })
+    .then(x => x.json());
 
 };
 
 
-module.exports = {getCmacc, getFiles, getUser, getCommit, getBranches, saveCommit};
+module.exports = {getCmacc, getFiles, getUser, getCommit, saveCommit, getBranches, getBranch, createBranch};

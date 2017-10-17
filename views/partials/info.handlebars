@@ -13,7 +13,7 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               {{#each branches}}
-                <a class="dropdown-item" href="/{{../context.user}}/{{../context.repo}}/{{../context.branch}}/{{../context.path}}?format={{../context.format}}{{#if ../context.prop }}&prop={{../context.prop}}{{/if}}">{{this.name}}</a>
+                <a class="dropdown-item" href="{{../context.root}}/{{../context.user}}/{{../context.repo}}/{{this.name}}/{{../context.path}}?format={{../context.format}}{{#if ../context.prop }}&prop={{../context.prop}}{{/if}}">{{this.name}}</a>
               {{/each}}
             </div>
           </div>
@@ -23,10 +23,18 @@
         </li>
       </ul>
     </div>
+    {{#if github}}
     <div class="float-right">
       <a class="btn" target="_blank" href="https://github.com/{{context.user}}/{{context.repo}}/blob/{{context.branch}}/{{context.path}}">
         <i class="fa fa-github" aria-hidden="true"></i> open in Github
       </a>
     </div>
+    {{/if}}
+
+    {{#if save}}
+      <div class="float-right">
+        <button id="saveButton" class="btn btn-outline-success" type="button">Save</button>
+      </div>
+    {{/if}}
   </div>
 </div>
