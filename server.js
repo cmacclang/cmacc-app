@@ -31,11 +31,12 @@ app.use(require('./routes/testRoute'));
 
 app.use(require('./routes/authRoute'));
 app.use(require('./routes/apiRoute'));
+app.use(require('./routes/pdfRoute'));
 app.use(require('./routes/loaderRoute'));
 app.use(require('./routes/contractRoute'));
 app.use(require('./routes/definitionsRoute'));
 app.use(require('./routes/gistsRoute'));
-app.use(require('./routes/proseRoute'));
+app.use(require('./routes/editorRoute'));
 app.use(require('./routes/cmaccRoute'));
 app.use(require('./routes/indexRoute'));
 app.use(require('./routes/formioRoute'));

@@ -9,7 +9,7 @@ const router = express.Router();
 
 const cmacc = require('cmacc-compiler');
 
-router.use('/prose/:user/:repo/:branch/*', (req, res, next) => {
+router.use('/editor/:user/:repo/:branch/*', (req, res, next) => {
   const context = {
     user: req.params.user,
     repo: req.params.repo,
@@ -23,23 +23,25 @@ router.use('/prose/:user/:repo/:branch/*', (req, res, next) => {
   next();
 });
 
-router.get('/prose/:user/:repo/:branch/*', (req, res) => {
+router.get('/editor/:user/:repo/:branch/*', (req, res) => {
 
   const token = req.session['token'];
 
   const branches = githubServices.getBranches(req.context, token);
+  const user = githubServices.getUser(token);
 
-  Promise.all([branches])
+  Promise.all([user, branches])
     .then(x => {
       const obj = {
         context: req.context,
-        branches: x[0],
+        user: x[0],
+        branches: x[1],
       };
       res.render('prose', obj);
     });
 });
 
-router.post('/prose/:user/:repo/:branch/*', expressBodyParser.json(), (req, res) => {
+router.post('/editor/:user/:repo/:branch/*', expressBodyParser.json(), (req, res) => {
 
   const branch = req.body.branch;
   const message = req.body.message;
