@@ -16,7 +16,7 @@ router.use('/editor/:user/:repo/:branch/*', (req, res, next) => {
     branch: req.params.branch || 'master',
     path: req.params[0],
     prop: req.query.prop,
-    root: '/prose'
+    root: '/editor'
   };
   req.context = context;
   req.token = req.session['token'];
@@ -37,7 +37,7 @@ router.get('/editor/:user/:repo/:branch/*', (req, res) => {
         user: x[0],
         branches: x[1],
       };
-      res.render('prose', obj);
+      res.render('editor', obj);
     });
 });
 
