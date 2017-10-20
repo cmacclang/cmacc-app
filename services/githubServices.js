@@ -5,13 +5,13 @@ const cmacc = require('cmacc-compiler');
 
 const fetch = require('node-fetch');
 
-const apiUrl = process.env.GITHUB_API_URL;
+const githubApiUrl = process.env.GITHUB_API_URL;
 
 const getCmacc = function (context, token) {
 
   const opts = {
     token,
-    githubApiUrl: apiUrl,
+    githubApiUrl,
   };
 
   const base = 'github:///'
@@ -59,7 +59,7 @@ const getCmacc = function (context, token) {
 const getFiles = function (owner, repo, path1, token) {
 
   const urlPath = path.join('repos', owner, repo, 'contents', path1);
-  const location = url.resolve(apiUrl, urlPath);
+  const location = url.resolve(githubApiUrl, urlPath);
 
   const opts = {
     headers: {
@@ -82,7 +82,7 @@ const getFiles = function (owner, repo, path1, token) {
 const getUser = (token) => {
 
 
-  const location = url.resolve(apiUrl, 'user');
+  const location = url.resolve(githubApiUrl, 'user');
 
   const opts = {
     headers: {
@@ -98,7 +98,7 @@ const getUser = (token) => {
 const getBranches = (context, token) => {
 
   const urlPath = path.join('repos', context.user, context.repo, 'branches');
-  const location = url.resolve(apiUrl, urlPath);
+  const location = url.resolve(githubApiUrl, urlPath);
 
   const opts = {
     headers: {
@@ -162,7 +162,7 @@ const getBranch = (context, token) => {
 const getCommit = (context, token) => {
 
   const urlPath = path.join('repos', context.user, context.repo, 'contents', context.path);
-  const ref = url.resolve(apiUrl, urlPath) + '?ref=' + context.branch;
+  const ref = url.resolve(githubApiUrl, urlPath) + '?ref=' + context.branch;
 
   const opts = {
     headers: {
@@ -181,7 +181,7 @@ const getCommit = (context, token) => {
 const saveCommit = (message, content, context, token) => {
 
   const urlPath = path.join('repos', context.user, context.repo, 'contents', context.path);
-  const ref = url.resolve(apiUrl, urlPath) + '?ref=' + context.branch;
+  const ref = url.resolve(githubApiUrl, urlPath) + '?ref=' + context.branch;
 
   return getCommit(context, token)
     .then((commit) => {

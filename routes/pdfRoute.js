@@ -6,6 +6,8 @@ const expressBodyParser = require('body-parser');
 const cmacc = require('cmacc-compiler');
 const githubServices = require('../services/githubServices');
 
+const githubApiUrl = process.env.GITHUB_API_URL;
+
 var pdf = require('html-pdf');
 
 const router = express.Router();
@@ -28,7 +30,10 @@ router.get('/pdf/:user/:repo/:branch/*', (req, res) => {
 
   const token = req.session['token'];
 
-  const opts = {token};
+  const context = req.context;
+  const base = `github:///${context.user}/${context.repo}/${context.branch}/${context.path}`;
+
+  const opts = {token, base, githubApiUrl};
 
   githubServices.getCmacc(req.context, token)
     .then(ast => {
@@ -41,10 +46,10 @@ router.get('/pdf/:user/:repo/:branch/*', (req, res) => {
       return ast;
     })
     .then(x => {
-      return cmacc.render(x)
+      return cmacc.render(x, opts)
     })
     .then(x => {
-      return cmacc.remarkable.render(x, opts)
+      return cmacc.remarkable.render(x)
     })
     .then(html => {
 
