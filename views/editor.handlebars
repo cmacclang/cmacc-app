@@ -56,6 +56,13 @@
 
   const ref = 'github:///{{context.user}}/{{context.repo}}/{{context.branch}}/{{context.path}}';
 
+  const context = {
+    user: '{{context.user}}',
+    repo: '{{context.repo}}',
+    branch: '{{context.branch}}',
+    path: '{{context.path}}'
+  };
+
   const opts = {
     base: ref,
     loaders
@@ -168,31 +175,33 @@
         return;
       }
 
-      editor.getResult()
-              .then(res => {
+      editor.getResult().then(res => {
 
-                return {
-                  message: message,
-                  branch: branch,
-                  files: res
-                }
-              })
-              .then(res => {
-                console.log(res)
-                return fetch(window.location.pathname, {
-                  method: 'POST',
-                  headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                  },
-                  credentials: 'same-origin',
-                  body: JSON.stringify(res)
-                })
-              })
-              .then(res => {
-                console.log(res)
-                commitModal.modal('hide');
-              })
+        return {
+          message: message,
+          branch: branch,
+          files: res
+        }
+      }).then(res => {
+        console.log(res)
+        return fetch(window.location.pathname, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify(res)
+        })
+      }).then(res => {
+        console.log(res)
+        if (branch) {
+          window.location.href = `/editor/${context.user}/${context.repo}/${branch}/${context.path}`
+        } else {
+          window.location.href = `/editor/${context.user}/${context.repo}/${context.branch}/${context.path}`
+        }
+        commitModal.modal('hide');
+      })
 
 
     });
@@ -288,7 +297,7 @@
           </div>
 
           <div class="form-group" id="form-group-branch">
-            <input class="form-control" type="text" id="form-commit-branch" />
+            <input class="form-control" type="text" id="form-commit-branch"/>
           </div>
 
         </form>
