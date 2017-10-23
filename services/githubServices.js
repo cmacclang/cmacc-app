@@ -114,7 +114,7 @@ const getBranches = (context, token) => {
 const createBranch = (name, context, token) => {
 
   const urlPath = path.join('repos', context.user, context.repo, 'git/refs');
-  const ref = url.resolve(apiUrl, urlPath);
+  const ref = url.resolve(githubApiUrl, urlPath);
 
   return getBranch(context, token)
     .then(branch => {
@@ -146,7 +146,7 @@ const getBranch = (context, token) => {
   console.log('getBranch', context)
 
   const urlPath = path.join('repos', context.user, context.repo, 'git/refs/heads', context.branch);
-  const ref = url.resolve(apiUrl, urlPath);
+  const ref = url.resolve(githubApiUrl, urlPath);
 
   const opts = {
     headers: {
