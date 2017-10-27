@@ -31,6 +31,7 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.6",
     "font-awesome": "^4.7.0",
+    "formiojs": "^2.20.4",
     "github": "^9.2.0",
     "html-pdf": "^2.2.0",
     "http-proxy-middleware": "^0.17.4",
