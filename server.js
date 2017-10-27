@@ -33,6 +33,7 @@ app.use(require('./routes/authRoute'));
 app.use(require('./routes/apiRoute'));
 app.use(require('./routes/pdfRoute'));
 app.use(require('./routes/loaderRoute'));
+app.use(require('./routes/reposRoute'));
 app.use(require('./routes/contractRoute'));
 app.use(require('./routes/definitionsRoute'));
 app.use(require('./routes/gistsRoute'));

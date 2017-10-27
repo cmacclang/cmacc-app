@@ -19,16 +19,18 @@ const getToken = function (code) {
   const url = `${authUrl}/access_token?${querystring.stringify(input)}`;
   const opts = {
     method: 'POST',
+    headers: {
+      Accept: 'application/json'
+    }
   };
 
   return fetch(url, opts)
-    .then(x => x.text())
+    .then(x => x.json())
     .then(x => {
       return x;
     })
     .then(x => {
-      const res = querystring.parse(x)
-      return res['access_token']
+      return x['access_token']
     })
     .catch(console.log)
 };

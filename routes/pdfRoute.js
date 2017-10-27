@@ -58,7 +58,7 @@ router.get('/pdf/:user/:repo/:branch/*', (req, res) => {
         "orientation": "portrait",
         "border": "0.75in",
         "type": "pdf",
-        "zoomFactor": "0.5"
+        "zoomFactor": "0,1"
       };
 
       const css = `<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">`

@@ -56,7 +56,7 @@ const getCmacc = function (context, token) {
 
 };
 
-const getFiles = function (owner, repo, path1, token) {
+const getFile = function (owner, repo, path1, token) {
 
   const urlPath = path.join('repos', owner, repo, 'contents', path1);
   const location = url.resolve(githubApiUrl, urlPath);
@@ -76,13 +76,12 @@ const getFiles = function (owner, repo, path1, token) {
       }
     })
 
-
 };
 
-const getUser = (token) => {
+const getFiles = function (owner, repo, branch, token) {
 
-
-  const location = url.resolve(githubApiUrl, 'user');
+  const urlPath = path.join('repos', owner, repo, 'git/trees', branch);
+  const location = url.resolve(githubApiUrl, urlPath);
 
   const opts = {
     headers: {
@@ -91,6 +90,56 @@ const getUser = (token) => {
   };
 
   return fetch(location, opts)
+    .then(x => {
+      if (x.status === 200) {
+        return x.json()
+      } else {
+        return null;
+      }
+    })
+
+};
+
+const getRepos = function (q, token) {
+
+  const ref = q ?
+  url.resolve(githubApiUrl, '/search/repositories') + `?q=${q}` :
+  url.resolve(githubApiUrl, '/user/repos') + '?sort=pushed';
+
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+
+  return fetch(ref, opts)
+    .then(x => {
+      if (x.status === 200) {
+        return x.json()
+      } else {
+        return null;
+      }
+    })
+    .then(x => {
+      return q ? x.items : x
+    })
+
+
+};
+
+
+const getUser = (token) => {
+
+  const ref = url.resolve(githubApiUrl, 'user');
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+
+  return fetch(ref, opts)
     .then(x => x.json())
 
 };
@@ -105,9 +154,11 @@ const getBranches = (context, token) => {
       'Authorization': "token " + token
     }
   };
-  console.log('getBranches', location, opts)
   return fetch(location, opts)
     .then(x => x.json())
+    .catch(e => {
+      console.log(e)
+    });
 
 };
 
@@ -118,8 +169,6 @@ const createBranch = (name, context, token) => {
 
   return getBranch(context, token)
     .then(branch => {
-
-      console.log('createBranch', name, context, branch);
 
       const body = {
         ref: `refs/heads/${name}`,
@@ -136,14 +185,15 @@ const createBranch = (name, context, token) => {
 
       return fetch(ref, opts);
     })
-    .then(x => x.json());
+    .then(x => x.json())
+    .catch(e => {
+      console.log(e)
+    });
 
 };
 
 
 const getBranch = (context, token) => {
-
-  console.log('getBranch', context)
 
   const urlPath = path.join('repos', context.user, context.repo, 'git/refs/heads', context.branch);
   const ref = url.resolve(githubApiUrl, urlPath);
@@ -208,4 +258,15 @@ const saveCommit = (message, content, context, token) => {
 };
 
 
-module.exports = {getCmacc, getFiles, getUser, getCommit, saveCommit, getBranches, getBranch, createBranch};
+module.exports = {
+  getCmacc,
+  getFile,
+  getFiles,
+  getUser,
+  getCommit,
+  saveCommit,
+  getBranches,
+  getBranch,
+  getRepos,
+  createBranch
+};
