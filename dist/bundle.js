@@ -32332,9 +32332,11 @@ class editor {
         let obj = acc.find(x => x.file === file)
 
         if (!obj) {
+          const split = mutation.path.split('.')
+          const res = mutation['file'] ? (split.reduce((a, b) => a[b], ast) || ast) : ast
           obj = {
             file: file,
-            content: mutation['file'] ? mutation.path.split('.').reduce((a, b) => a[b], ast)['$data'] : ast['$data']
+            content: res ? res['$data'] : ""
           };
           acc.push(obj);
         }
@@ -32344,7 +32346,8 @@ class editor {
           if (obj.content.match(regex)) {
             obj.content = obj.content.replace(regex, `$ ${mutation.path} = '${mutation.value}'`)
           } else {
-            obj.content = `$ ${mutation.path} = '${mutation.value}'\n\n` + obj.content
+            const split = splitContent(obj.content)
+            obj.content = `${split.header.join('\n')}\n$ ${mutation.path} = '${mutation.value}'\n\n${split.content.join('\n')}`
           }
         }
 
@@ -32368,12 +32371,7 @@ class editor {
     });
 
     if (mutations.length > 0) {
-      const split = mutations[mutations.length - 1].value.split(/\r?\n/);
-      const index = split.findIndex(x => x.match(/^[^\$\s\/]/));
-      const res = {
-        header: split.slice(0, index),
-        content: split.slice(index)
-      };
+      const res = splitContent(mutations[mutations.length - 1].value)
       return Promise.resolve(res)
     }
 
@@ -32382,12 +32380,7 @@ class editor {
       const res = split.reduce((a, b) => a[b], ast);
 
       if (typeof res === 'object') {
-        const split = res['$data'].split(/\r?\n/)
-        const index = split.findIndex(x => x.match(/^[^\$\s\/]/))
-        return {
-          header: split.slice(0, index),
-          content: split.slice(index)
-        }
+        return splitContent(res['$data'])
       }
 
       if (typeof res === 'string') {
@@ -32412,6 +32405,15 @@ class editor {
 
 function multipleLines(value) {
   return (/\r|\n/.exec(value))
+}
+
+function splitContent(content) {
+  const split = content.split(/\r?\n/)
+  const index = split.findIndex(x => x.match(/^[^\$\s\/]/))
+  return {
+    header: split.slice(0, index),
+    content: split.slice(index)
+  }
 }
 
 

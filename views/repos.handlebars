@@ -1,5 +1,5 @@
 {{#if repos}}
-  <div class="mb-2">
+  <div class="mb-3">
     <div class="input-group">
       <input id="q" type="text" class="form-control" placeholder="Search for..." value="{{q}}">
       <span class="input-group-btn">
@@ -23,7 +23,7 @@
     <ul class="list-group">
       {{#each repos}}
         <li class="list-group-item">
-          <a href="/repos/{{this.full_name}}/master">{{this.full_name}}</a>
+          <a href="/repos/{{this.full_name}}/master?redirect=true">{{this.full_name}}</a>
         </li>
       {{/each}}
     </ul>
@@ -32,12 +32,19 @@
 
 
 {{#if files}}
+
+  <!-- Nav -->
+  <nav style="margin-bottom: 20px">
+    {{> info new=true}}
+  </nav>
+
+
   <ul class="list-group">
     {{#each files}}
 
       <li class="list-group-item">
         <span><i class="fa fa-file" aria-hidden="true"></i>&nbsp;</span>
-        <a href="/{{../context.owner}}/{{../context.repo}}/{{../context.branch}}/{{this.path}}">{{this.path}}</a>
+        <a href="/editor/{{../context.owner}}/{{../context.repo}}/{{../context.branch}}/{{this.path}}">{{this.path}}</a>
       </li>
 
     {{/each}}

@@ -54,13 +54,19 @@ router.get('/repos/:owner/:repo/:branch', (req, res) => {
   Promise.all([user, branches, files]).then(x => {
     const files = x[2].tree
       .filter(x => x.path.match(/\.cmacc$/))
+
+    // redirect to editor when repo contains index.cmacc
+    if(req.query.redirect && files.some(f => f.path === 'index.cmacc')){
+      return res.redirect(`/editor/${context.user}/${context.repo}/${context.branch}/index.cmacc`);
+    }
+
     const obj = {
       user: x[0],
       branches: x[1],
       context: context,
       files: files,
     };
-    res.render('repos', obj);
+    return res.render('repos', obj);
   });
 });
 

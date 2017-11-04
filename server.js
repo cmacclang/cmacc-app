@@ -29,7 +29,7 @@ app.use('/dist', express.static('dist'));
 
 app.use('/lib/formiojs', express.static('node_modules/formiojs/dist'));
 
-app.use(require('./routes/testRoute'));
+app.use(require('./routes/loginRoute'));
 
 app.use(require('./routes/authRoute'));
 app.use(require('./routes/apiRoute'));
