@@ -1,0 +1,105 @@
+<!-- Modal commit-->
+<div class="modal fade" id="commitModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Commit</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <form>
+
+          <div class="form-group">
+            <label>Commit message</label>
+            <input class="form-control" type="text" id="form-commit-message"/>
+          </div>
+
+          <div class="form-group">
+            <div class="radio">
+              <label>
+                <input type="radio" name="form-commit-select" value="false" checked> Commit directly to the <span
+                      class="badge badge-primary">{{context.branch}}</span>branch.
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="form-commit-select" value="true"> Create a new branch for this commit
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group" id="form-group-branch">
+            <input class="form-control" type="text" id="form-commit-branch"/>
+          </div>
+
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="form-commit-save" type="button" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+
+    const commitModal = $('#commitModal');
+
+    $('#form-commit-save').click(function () {
+      const message = $('#form-commit-message').val()
+      const branch = $('#form-commit-branch').val()
+      if (!(message)) {
+        alert("Please enter a message.")
+        return;
+      }
+
+      editor.getResult().then(res => {
+
+        return {
+          message: message,
+          branch: branch,
+          files: res
+        }
+      }).then(res => {
+        return fetch(window.location.pathname, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify(res)
+        })
+      }).then(res => {
+        if (branch) {
+          window.location.href = `/editor/${context.user}/${context.repo}/${branch}/${context.path}`
+        } else {
+          window.location.href = `/editor/${context.user}/${context.repo}/${context.branch}/${context.path}`
+        }
+        commitModal.modal('hide');
+      })
+
+
+    });
+
+
+    $('input[type="radio"]').on('click change', function (e) {
+      const value = $(e.target).val()
+      if (value === 'true') {
+        $('#form-group-branch').show();
+        $('#form-commit-branch').val(null);
+      } else {
+        $('#form-group-branch').hide();
+        $('#form-commit-branch').val(null);
+      }
+    });
+
+  });
+</script>

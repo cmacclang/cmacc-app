@@ -1,0 +1,63 @@
+<!-- Modal edit -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="mutations"></div>
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Prose object</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label>File</label>
+            <p class="form-control-static" id="form-edit-file"></p>
+          </div>
+          <div class="form-group">
+            <label for="variable">Value</label>
+            <input class="form-control" type="hidden" id="form-edit-value"/>
+            <input class="form-control" type="hidden" id="form-edit-header"/>
+            <textarea class="form-control" id="form-edit-content" rows="20"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="form-edit-remove" type="button" class="btn btn-danger">Remove</button>
+        <button id="form-edit-save" type="button" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+
+    const editModal = $('#editModal');
+
+    $('#form-edit-save').click(function () {
+      const path = editModal.find('#form-edit-file').text();
+      const header = editModal.find('#form-edit-header').val();
+      const content = editModal.find('#form-edit-content').val();
+
+      const res = header ? header + '\n' + content : content;
+
+      editor.addMutation(path, res).then(function (mutations) {
+        render().then(() => {
+          editModal.modal('hide');
+        });
+      });
+    });
+
+    $('#form-edit-remove').click(function () {
+      const path = editModal.find('#form-edit-file').text();
+      editor.resetMutation(path);
+      render().then(() => {
+        editModal.modal('hide');
+      });
+    });
+  });
+</script>
