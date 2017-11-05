@@ -70,141 +70,66 @@
 
   const editor = new window.Cmacc.CmaccEditor(ref, opts);
 
-  $(document).ready(function () {
-
-
-    const saveButton = $('#saveButton');
+  function render () {
     const content = $('#content');
+    return editor.render(true)
+            .then(html => content.html(html))
+            .then(x => bind())
+  };
+
+  function bind() {
 
     const editModal = $('#editModal');
-    const commitModal = $('#commitModal');
 
-    function render() {
-      return editor.render(true)
-              .then(html => content.html(html))
-              .then(x => bind())
-    }
+    const elements = $('cmacc-placeholder-inline, cmacc-placeholder-block');
 
-    function bind() {
+    elements.each(function (i, el) {
 
-      const elements = $('cmacc-placeholder-inline, cmacc-placeholder-block');
-
-      elements.each(function (i, el) {
-
-        const path = $(el).attr('variable')
-        if (editor.mutations.find(x => x.path === path)) {
-          $(el).attr('overwrite', true)
-        }
-        $(el).attr('data-toggle', 'tooltip');
-        $(el).attr('title', path);
-      });
-
-      //elements.tooltip();
-
-      elements.mousemove(function (ev) {
-        if ($(ev.currentTarget))
-          elements.css("background-color", "");
-        $(ev.currentTarget).css("background-color", "lightgrey");
-        ev.preventDefault();
-        ev.stopPropagation();
-      });
-
-      elements.click(function (ev) {
-
-        var path = $(ev.currentTarget).attr('variable');
-
-        if (!path) {
-          return;
-        }
-
-        ev.preventDefault();
-        ev.stopPropagation();
-
-        $('#form-edit-file').text(path);
-        editor.getValue(path).then((value) => {
-          $('#form-edit-header').val(value.header.join('\n'));
-          $('#form-edit-content').val(value.content.join('\n'));
-        });
-
-        editModal.modal('show')
-
-      });
-    }
-
-    $('#form-edit-save').click(function () {
-      const path = editModal.find('#form-edit-file').text();
-      const header = editModal.find('#form-edit-header').val();
-      const content = editModal.find('#form-edit-content').val();
-
-      const res = header ? header + '\n' + content : content;
-
-      editor.addMutation(path, res)
-              .then(function (mutations) {
-                render().then(() => {
-                  console.log(mutations)
-                  editModal.modal('hide');
-                });
-              });
-    });
-
-    $('#form-edit-remove').click(function () {
-      const path = editModal.find('#form-edit-file').text();
-      editor.resetMutation(path);
-      render().then(() => {
-        editModal.modal('hide');
-      });
-
-    });
-
-    $('input[type="radio"]').on('click change', function (e) {
-      const value = $(e.target).val()
-      if (value === 'true') {
-        $('#form-group-branch').show();
-        $('#form-commit-branch').val(null);
-      } else {
-        $('#form-group-branch').hide();
-        $('#form-commit-branch').val(null);
+      const path = $(el).attr('variable')
+      if (editor.mutations.find(x => x.path === path)) {
+        $(el).attr('overwrite', true)
       }
+      $(el).attr('data-toggle', 'tooltip');
+      $(el).attr('title', path);
     });
 
-    $('#form-commit-save').click(function () {
-      const message = $('#form-commit-message').val()
-      const branch = $('#form-commit-branch').val()
-      if (!(message)) {
-        alert("Please enter a message.")
+    //elements.tooltip();
+
+    elements.mousemove(function (ev) {
+      if ($(ev.currentTarget))
+        elements.css("background-color", "");
+      $(ev.currentTarget).css("background-color", "lightgrey");
+      ev.preventDefault();
+      ev.stopPropagation();
+    });
+
+    elements.click(function (ev) {
+
+      var path = $(ev.currentTarget).attr('variable');
+
+      if (!path) {
         return;
       }
 
-      editor.getResult().then(res => {
+      ev.preventDefault();
+      ev.stopPropagation();
 
-        return {
-          message: message,
-          branch: branch,
-          files: res
-        }
-      }).then(res => {
-        console.log(res)
-        return fetch(window.location.pathname, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          credentials: 'same-origin',
-          body: JSON.stringify(res)
-        })
-      }).then(res => {
-        console.log(res)
-        if (branch) {
-          window.location.href = `/editor/${context.user}/${context.repo}/${branch}/${context.path}`
-        } else {
-          window.location.href = `/editor/${context.user}/${context.repo}/${context.branch}/${context.path}`
-        }
-        commitModal.modal('hide');
-      })
+      $('#form-edit-file').text(path);
+      editor.getValue(path).then((value) => {
+        $('#form-edit-header').val(value.header.join('\n'));
+        $('#form-edit-content').val(value.content.join('\n'));
+      });
 
+      editModal.modal('show')
 
     });
+  }
+
+  $(document).ready(function () {
+
+    const saveButton = $('#saveButton');
+
+    const commitModal = $('#commitModal');
 
     $('#saveButton').click(function () {
       $('#form-group-branch').hide();
@@ -219,94 +144,12 @@
 
 <!-- Nav -->
 <nav style="margin-bottom: 20px">
-  {{> info save=true pdf=true}}
+  {{> info save=permission.permissions.admin pdf=true}}
 </nav>
 
 
 <!-- Content -->
 <div id="content"></div>
 
-<!-- Modal edit -->
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="mutations"></div>
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Prose object</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label>File</label>
-            <p class="form-control-static" id="form-edit-file"></p>
-          </div>
-          <div class="form-group">
-            <label for="variable">Value</label>
-            <input class="form-control" type="hidden" id="form-edit-value"/>
-            <input class="form-control" type="hidden" id="form-edit-header"/>
-            <textarea class="form-control" id="form-edit-content" rows="20"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="form-edit-remove" type="button" class="btn btn-danger">Remove</button>
-        <button id="form-edit-save" type="button" class="btn btn-primary">Save</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- Modal commit-->
-<div class="modal fade" id="commitModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-md" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Commit</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-
-        <form>
-
-          <div class="form-group">
-            <label>Commit message</label>
-            <input class="form-control" type="text" id="form-commit-message"/>
-          </div>
-
-          <div class="form-group">
-            <div class="radio">
-              <label>
-                <input type="radio" name="form-commit-select" value="false" checked> Commit directly to the <span
-                      class="badge badge-primary">{{context.branch}}</span>branch.
-              </label>
-            </div>
-            <div class="radio">
-              <label>
-                <input type="radio" name="form-commit-select" value="true"> Create a new branch for this commit
-              </label>
-            </div>
-          </div>
-
-          <div class="form-group" id="form-group-branch">
-            <input class="form-control" type="text" id="form-commit-branch"/>
-          </div>
-
-        </form>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="form-commit-save" type="button" class="btn btn-primary">Save</button>
-      </div>
-    </div>
-  </div>
-</div>
+{{> editor_modal_edit}}
+{{> editor_modal_commit}}

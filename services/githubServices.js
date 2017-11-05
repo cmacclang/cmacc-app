@@ -162,6 +162,24 @@ const getBranches = (context, token) => {
 
 };
 
+const getCollaborators = (context, token) => {
+
+  const urlPath = path.join('repos', context.user, context.repo, 'collaborators');
+  const location = url.resolve(githubApiUrl, urlPath);
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+  return fetch(location, opts)
+    .then(x => x.json())
+    .catch(e => {
+      console.log(e)
+    });
+
+};
+
 const createBranch = (name, context, token) => {
 
   const urlPath = path.join('repos', context.user, context.repo, 'git/refs');
@@ -268,5 +286,6 @@ module.exports = {
   getBranches,
   getBranch,
   getRepos,
-  createBranch
+  createBranch,
+  getCollaborators
 };

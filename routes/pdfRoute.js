@@ -62,8 +62,8 @@ router.get('/pdf/:user/:repo/:branch/*', (req, res) => {
       };
 
       const css = `<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">`
-
-      pdf.create(css + html, config).toBuffer(function (err, buffer) {
+      const font = `<style> html, th, td {font-size: 12px;}</style>`;
+      pdf.create(css + font + html, config).toBuffer(function (err, buffer) {
         res.setHeader('Content-disposition', `inline; filename="${req.context.path.replace('.cmacc', '.pdf')}"`);
         res.setHeader('Content-type', 'application/pdf');
         res.send(buffer)

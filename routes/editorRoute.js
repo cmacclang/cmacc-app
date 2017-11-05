@@ -29,13 +29,16 @@ router.get('/editor/:user/:repo/:branch/*', (req, res) => {
 
   const branches = githubServices.getBranches(req.context, token);
   const user = githubServices.getUser(token);
+  const collaborators = githubServices.getCollaborators(req.context, token);
 
-  Promise.all([user, branches])
+  Promise.all([user, branches, collaborators])
     .then(x => {
+      console.log(x[2].find(c => c.login === x[0].login))
       const obj = {
         context: req.context,
         user: x[0],
         branches: x[1],
+        permission: x[2].find(c => c.login === x[0].login),
       };
       res.render('editor', obj);
     });

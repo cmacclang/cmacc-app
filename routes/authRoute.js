@@ -7,9 +7,20 @@ const authUrl = process.env.GITHUB_AUTH_URL;
 
 const router = express.Router();
 
-router.get('/full_access', (req, res) => {
+router.get('/auth/full_access', (req, res) => {
   const url = `${authUrl}/authorize?scope=user:email,repo,gist,write:org&client_id=${clientId}`;
   return res.redirect(url);
+});
+
+router.get('/auth/login', (req, res) => {
+  const url = `${authUrl}/authorize?client_id=${clientId}`;
+  return res.redirect(url);
+});
+
+router.get('/auth/logout', (req, res) => {
+  req.session.destroy(function(err) {
+    return res.redirect("/login");
+  })
 });
 
 router.use((req, res, next) => {
@@ -29,9 +40,14 @@ router.use((req, res, next) => {
   }
 
   if (!req.session['token']) {
-    const url = `${authUrl}/authorize?client_id=${clientId}`;
     req.session['redirect'] = req.url;
-    return res.redirect(url);
+
+    if(req.path === '/'){
+      return res.redirect('/login');
+    }
+
+    return res.redirect('/auth/login');
+
   }
 
   return next();

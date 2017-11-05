@@ -17,22 +17,9 @@
         <a class="nav-link" href="/gists">Gists</a>
       </li>
     </ul>
+
+    {{> account }}
+
   </div>
-
-  {{#if user}}
-    <div class="collapse navbar-collapse">
-
-      <div class="mr-auto">
-        test
-      </div>
-
-      <div class="my-2 my-md-0">
-        <img src="{{user.avatar_url}}" width="30" height="30" class="d-inline-block align-middle" alt="">
-        <span class="navbar-text">{{user.name}}</span>
-        <a style="font-size: 10px" href="/full_access">Full Access</a>
-      </div>
-
-    </div>
-  {{/if}}
 
 </nav>
