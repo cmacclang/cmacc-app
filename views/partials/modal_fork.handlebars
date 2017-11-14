@@ -1,0 +1,63 @@
+<!-- Modal edit -->
+<div class="modal fade" id="forkModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="mutations"></div>
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Fork repo</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+
+          <div class="form-group">
+            <label for="variable">Repo</label>
+            <select class="form-control" id="form-fork-repo">
+              <option value="">{{user.login}}</option>
+              {{#each organizations}}
+                <option value="{{this.login}}">{{this.login}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="form-fork-fork" type="button" class="btn btn-primary">Fork</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+
+    const forkModal = $('#forkModal');
+
+    $('#form-fork-fork').click(function () {
+      const repo = $('#form-fork-repo').val();
+      const res = {
+        repo: repo
+      }
+      const ref = `/editor/fork/${context.user}/${context.repo}/${context.branch}/${context.path}`
+      return fetch(ref, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify(res)
+      }).then(res => {
+        if(repo){
+          window.location.href = `/editor/${repo}/${context.repo}/${context.branch}/${context.path}`
+        }else{
+          window.location.href = `/editor/{{user.login}}/${context.repo}/${context.branch}/${context.path}`
+        }
+      });
+    })
+
+  });
+</script>

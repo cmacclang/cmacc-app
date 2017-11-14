@@ -1,15 +1,17 @@
 <style>
   cmacc-placeholder-inline {
-    box-sizing: border-box;
-    border: 1px dashed purple;
+    border: 1px solid lightgrey;
     cursor: pointer;
   }
 
   cmacc-placeholder-block {
-    box-sizing: border-box;
-    border: 1px dashed green;
+    border-bottom: 2px solid lightgrey;
     display: block;
     cursor: pointer;
+  }
+
+  cmacc-placeholder-block cmacc-placeholder-block:last-child {
+    margin-bottom: -2px; /* This negative margin overlaps the bottom border */
   }
 
   cmacc-placeholder-inline[overwrite], cmacc-placeholder-block[overwrite] {
@@ -99,7 +101,7 @@
     elements.mousemove(function (ev) {
       if ($(ev.currentTarget))
         elements.css("background-color", "");
-      $(ev.currentTarget).css("background-color", "lightgrey");
+      $(ev.currentTarget).css("background-color", "#f7f7f9");
       ev.preventDefault();
       ev.stopPropagation();
     });
@@ -129,13 +131,20 @@
   $(document).ready(function () {
 
     const saveButton = $('#saveButton');
+    const forkButton = $('#forkButton');
 
     const commitModal = $('#commitModal');
+    const forkModal = $('#forkModal');
 
-    $('#saveButton').click(function () {
+
+    saveButton.click(function () {
       $('#form-group-branch').hide();
       $('#form-commit-branch').val();
       commitModal.modal();
+    });
+
+    forkButton.click(function () {
+      forkModal.modal();
     });
 
     render();
@@ -145,12 +154,13 @@
 
 <!-- Nav -->
 <nav style="margin-bottom: 20px">
-  {{> info save=permission.permissions.admin pdf=true}}
+  {{> info save=collaborator pdf=true fork=true}}
 </nav>
 
 
 <!-- Content -->
 <div id="content"></div>
 
-{{> editor_modal_edit}}
-{{> editor_modal_commit}}
+{{> modal_edit}}
+{{> modal_commit}}
+{{> modal_fork}}

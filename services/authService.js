@@ -32,7 +32,7 @@ const getToken = function (code) {
     .then(x => {
       return x['access_token']
     })
-    .catch(console.log)
+    .catch(console.error)
 };
 
 module.exports = {

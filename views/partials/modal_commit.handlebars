@@ -68,7 +68,8 @@
           files: res
         }
       }).then(res => {
-        return fetch(window.location.pathname, {
+        const ref = `/editor/commit/${context.user}/${context.repo}/${context.branch}/${context.path}`
+        return fetch(ref, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -85,8 +86,6 @@
         }
         commitModal.modal('hide');
       })
-
-
     });
 
 

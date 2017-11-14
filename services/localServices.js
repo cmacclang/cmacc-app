@@ -3,19 +3,14 @@ const path = require('path');
 
 const cmacc = require('cmacc-compiler');
 
-const fetch = require('node-fetch');
+const fs = require('fs');
 
-const githubApiUrl = process.env.GITHUB_API_URL;
+const rootFolder = '/Users/wveelenturf/projects/cmacc';
 
 const getCmacc = function (context, token) {
 
-  const opts = {
-    token,
-    githubApiUrl,
-  };
-
-  const base = 'github:///'
-  const urlPath = path.join(context.user, context.repo, context.branch, context.path);
+  const base = 'file:///'
+  const urlPath = path.join(rootFolder, context.repo, context.path);
   const location = url.resolve(base, urlPath);
 
   if (context.format === 'source' || context.format === 'edit') {
@@ -97,7 +92,6 @@ const getFiles = function (owner, repo, branch, token) {
         return null;
       }
     })
-
 };
 
 const getRepos = function (q, token) {
@@ -144,21 +138,6 @@ const getUser = (token) => {
 
 };
 
-const getOrganizations = (token) => {
-
-  const ref = url.resolve(githubApiUrl, 'user/orgs');
-
-  const opts = {
-    headers: {
-      'Authorization': "token " + token
-    }
-  };
-
-  return fetch(ref, opts)
-    .then(x => x.json())
-
-};
-
 const getBranches = (context, token) => {
 
   const urlPath = path.join('repos', context.user, context.repo, 'branches');
@@ -177,10 +156,9 @@ const getBranches = (context, token) => {
 
 };
 
-const isCollaborator = (name, context, token) => {
+const getCollaborators = (context, token) => {
 
-  let urlPath = path.join('repos', context.user, context.repo, 'collaborators', name);
-
+  const urlPath = path.join('repos', context.user, context.repo, 'collaborators');
   const location = url.resolve(githubApiUrl, urlPath);
 
   const opts = {
@@ -188,15 +166,8 @@ const isCollaborator = (name, context, token) => {
       'Authorization': "token " + token
     }
   };
-
   return fetch(location, opts)
-    .then(res => {
-      if(res.status == 204) {
-        return true;
-      }else{
-        return false;
-      }
-    })
+    .then(x => x.json())
     .catch(e => {
       console.error(e)
     });
@@ -230,32 +201,6 @@ const createBranch = (name, context, token) => {
     .catch(e => {
       console.error(e)
     });
-
-};
-
-const createFork = (organization, context, token) => {
-
-  const urlPath = path.join('repos', context.user, context.repo, 'forks');
-  const ref = url.resolve(githubApiUrl, urlPath);
-
-  console.log(ref);
-
-  const body = {
-    organization
-  };
-
-  const opts = {
-    method: 'POST',
-    headers: {
-      'Authorization': "token " + token
-    },
-    body: organization ? JSON.stringify(body) : null,
-  };
-
-  return fetch(ref, opts)
-    .then(x => x.json())
-    .then(console.log)
-    .catch(console.error);
 
 };
 
@@ -330,13 +275,11 @@ module.exports = {
   getFile,
   getFiles,
   getUser,
-  getOrganizations,
   getCommit,
   saveCommit,
   getBranches,
   getBranch,
   getRepos,
   createBranch,
-  isCollaborator,
-  createFork
+  getCollaborators
 };

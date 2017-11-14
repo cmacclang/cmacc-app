@@ -29,29 +29,39 @@ router.get('/editor/:user/:repo/:branch/*', (req, res) => {
 
   const branches = githubServices.getBranches(req.context, token);
   const user = githubServices.getUser(token);
-  const collaborators = githubServices.getCollaborators(req.context, token);
+  const organizations = githubServices.getOrganizations(token);
 
-  Promise.all([user, branches, collaborators])
+  Promise.all([user, branches, organizations])
     .then(x => {
-      console.log(x[2].find(c => c.login === x[0].login))
-      const obj = {
-        context: req.context,
-        user: x[0],
-        branches: x[1],
-        permission: x[2].find(c => c.login === x[0].login),
-      };
-      res.render('editor', obj);
+      githubServices.isCollaborator(x[0].login, req.context, token).then(collaborator => {
+        const obj = {
+          context: req.context,
+          user: x[0],
+          organizations: x[2],
+          branches: x[1],
+          collaborator: collaborator
+        };
+        res.render('editor', obj);
+      });
+
     });
 });
 
-router.post('/editor/:user/:repo/:branch/*', expressBodyParser.json(), (req, res) => {
+router.post('/editor/commit/:user/:repo/:branch/*', expressBodyParser.json(), (req, res) => {
 
   const branch = req.body.branch;
   const message = req.body.message;
 
   if (message) {
     const token = req.session['token'];
-    const context = req.context;
+    const context = {
+      user: req.params.user,
+      repo: req.params.repo,
+      branch: req.params.branch || 'master',
+      path: req.params[0],
+      prop: req.query.prop,
+      root: '/editor/commit'
+    };
 
     const branchPromise = branch ? githubServices.createBranch(branch, context, token) : Promise.resolve();
 
@@ -60,7 +70,7 @@ router.post('/editor/:user/:repo/:branch/*', expressBodyParser.json(), (req, res
       const done = req.body.files.map(x => {
         context.path = x.file.replace(`github:///${context.user}/${context.repo}/${context.branch}`, '');
 
-        if(branch){
+        if (branch) {
           context.branch = branch;
         }
 
@@ -68,17 +78,31 @@ router.post('/editor/:user/:repo/:branch/*', expressBodyParser.json(), (req, res
       });
 
       return Promise.all(done)
-         .then(() => res.send("SUCCESS"))
-         .catch(e => {
-           console.log(e);
-           res.send(e);
-         })
+        .then(() => res.send("SUCCESS"))
+        .catch(e => {
+          console.log(e);
+          res.send(e);
+        })
     })
 
-  } else{
+  } else {
     res.send("NO CONTENT")
   }
 
+
+});
+
+router.post('/editor/fork/:user/:repo/:branch/*', expressBodyParser.json(), (req, res) => {
+  const repo = req.body.repo;
+  const context = {
+    user: req.params.user,
+    repo: req.params.repo,
+  }
+  const token = req.session['token'];
+  githubServices.createFork(repo, context, token)
+    .then(() => {
+      res.send("FORK" + repo)
+    })
 
 });
 
