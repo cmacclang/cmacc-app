@@ -34,14 +34,15 @@ router.get('/editor/:user/:repo/:branch/*', (req, res) => {
   Promise.all([user, branches, organizations])
     .then(x => {
       githubServices.getPermission(x[0].login, req.context, token).then(permission => {
-        console.log(permission)
+        //console.log(permission)
         const obj = {
           context: req.context,
           user: x[0],
           organizations: x[2],
           branches: x[1],
           permission: permission,
-          canFork: x[0].scopes.find(x => x === 'repo')
+          canFork: x[0].scopes.find(x => x === 'repo'),
+          canSave: permission !== null
         };
         res.render('editor', obj);
       });
@@ -82,7 +83,7 @@ router.post('/editor/commit/:user/:repo/:branch/*', expressBodyParser.json(), (r
       return Promise.all(done)
         .then(() => res.send("SUCCESS"))
         .catch(e => {
-          console.log(e);
+          console.error(e);
           res.send(e);
         })
     })
