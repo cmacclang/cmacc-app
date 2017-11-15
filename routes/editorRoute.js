@@ -33,13 +33,15 @@ router.get('/editor/:user/:repo/:branch/*', (req, res) => {
 
   Promise.all([user, branches, organizations])
     .then(x => {
-      githubServices.isCollaborator(x[0].login, req.context, token).then(collaborator => {
+      githubServices.getPermission(x[0].login, req.context, token).then(permission => {
+        console.log(permission)
         const obj = {
           context: req.context,
           user: x[0],
           organizations: x[2],
           branches: x[1],
-          collaborator: collaborator
+          permission: permission,
+          canFork: x[0].scopes.find(x => x === 'repo')
         };
         res.render('editor', obj);
       });

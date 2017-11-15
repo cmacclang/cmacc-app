@@ -140,7 +140,14 @@ const getUser = (token) => {
   };
 
   return fetch(ref, opts)
-    .then(x => x.json())
+    .then(x => x.json()
+        .then(res => {
+          const oauthScopes = x.headers.get('x-oauth-scopes') ? x.headers.get('x-oauth-scopes').split(',') : []
+          res.scopes = oauthScopes
+            .map(x => x.trim())
+            .filter(x => x !== "")
+          return res;
+        }))
 
 };
 
@@ -202,6 +209,33 @@ const isCollaborator = (name, context, token) => {
     });
 
 };
+
+const getPermission = (name, context, token) => {
+
+  let urlPath = path.join('repos', context.user, context.repo, 'collaborators', name, 'permission');
+
+  const location = url.resolve(githubApiUrl, urlPath);
+
+  const opts = {
+    headers: {
+      'Authorization': "token " + token
+    }
+  };
+
+  return fetch(location, opts)
+    .then(res => {
+      if(res.status === 403){
+        return null
+      }
+      return res.json()
+    })
+    .catch(e => {
+      console.error(e)
+    });
+
+};
+
+
 
 const createBranch = (name, context, token) => {
 
@@ -338,5 +372,6 @@ module.exports = {
   getRepos,
   createBranch,
   isCollaborator,
+  getPermission,
   createFork
 };
