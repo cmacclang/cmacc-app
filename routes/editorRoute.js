@@ -31,6 +31,10 @@ router.get('/editor/:user/:repo/:branch/*', (req, res) => {
   const user = githubServices.getUser(token);
   const organizations = githubServices.getOrganizations(token);
 
+  const init = Object.keys(req.query).map((key) => {
+    return {key: key, value: req.query[key]};
+  });
+
   Promise.all([user, branches, organizations])
     .then(x => {
       githubServices.getPermission(x[0].login, req.context, token).then(permission => {
@@ -40,6 +44,7 @@ router.get('/editor/:user/:repo/:branch/*', (req, res) => {
           user: x[0],
           organizations: x[2],
           branches: x[1],
+          init: JSON.stringify(init),
           permission: permission,
           canFork: x[0].scopes.find(x => x === 'repo'),
           canSave: permission !== null

@@ -5,9 +5,18 @@
   var data = {{{content}}}
   Formio.createForm(document.getElementById('formio'), data)
   .then((form) => {
+
     form.on('submit', (submission) => {
 
-      console.log(submission)
+      console.log('123', submission)
+      const qs = Object.keys(submission.data).map((key) => {
+        return key + "=" + submission.data[key]
+      })
+      .join("&");
+
+      const href = '/editor/{{{context.user}}}/{{{context.repo}}}/{{{context.branch}}}/index.cmacc?' + qs
+
+      window.location.href = href;
 
     });
   });

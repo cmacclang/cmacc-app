@@ -72,7 +72,12 @@
 
   const editor = new window.Cmacc.CmaccEditor(ref, opts);
 
-  function render () {
+  const init = JSON.parse('{{{init}}}')
+  const res = init.map((x) => {
+    return editor.addMutation(x.key, x.value)
+  })
+
+  function render() {
     const content = $('#content');
     return editor.render(true)
             .then(html => content.html(html))
@@ -147,7 +152,7 @@
       forkModal.modal();
     });
 
-    render();
+    Promise.all(res).then(x => render() )
 
   });
 </script>
