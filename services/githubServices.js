@@ -56,10 +56,10 @@ const getCmacc = function (context, token) {
 
 };
 
-const getFile = function (owner, repo, path1, token) {
+const getFile = function (owner, repo, branch, path1, token) {
 
   const urlPath = path.join('repos', owner, repo, 'contents', path1);
-  const location = url.resolve(githubApiUrl, urlPath);
+  const location = url.resolve(githubApiUrl, urlPath) + (branch ? '?ref=' + branch : '');
 
   const opts = {
     headers: {

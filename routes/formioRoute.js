@@ -31,7 +31,7 @@ router.get('/formio/:user/:repo/:branch/*', (req, res) => {
   const context = req.context;
   const token = req.token;
 
-  githubServices.getFile(context.user, context.repo, context.path, token).then(data => {
+  githubServices.getFile(context.user, context.repo, context.branch, context.path, token).then(data => {
     const content = new Buffer(data.content, 'base64').toString();
 
     const obj = {};

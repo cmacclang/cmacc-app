@@ -45,9 +45,9 @@ router.get('/definitions', (req, res) => {
 
   const user = githubServices.getUser(token);
 
-  const definitionsUS = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', 'US', token);
-  const definitionsFR = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', 'FR', token);
-  const definitionsNL = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', 'NL', token);
+  const definitionsUS = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', null, 'US', token);
+  const definitionsFR = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', null, 'FR', token);
+  const definitionsNL = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', null, 'NL', token);
 
   Promise.all([user, definitionsUS, definitionsFR, definitionsNL]).then(x => {
 
@@ -84,8 +84,8 @@ router.get('/definitions/edit/:definition/:from/:to', (req, res) => {
   const user = githubServices.getUser(token);
   const fromPath = context.from.toUpperCase() + '/' + context.definition + '.cmacc';
   const toPath = context.to.toUpperCase() + '/' + context.definition + '.cmacc';
-  const definitionsFrom = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', fromPath, token);
-  const definitionsTo = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', toPath, token);
+  const definitionsFrom = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', null, fromPath, token);
+  const definitionsTo = githubServices.getFile('cmacclang', 'cmacc-lib-definitions', null, toPath, token);
 
 
   Promise.all([user, definitionsFrom, definitionsTo]).then(x => {
